@@ -40,7 +40,7 @@ Link al repositorio: https://github.com/frandemariaUTN/isw_repo_grupo_7
 
 # CRITERIO DE DETERMINACIÓN DE LA ESTRUCTURA
 
-● **Informacion_De_La_Catedra/:** Este directorio funciona como el espacio administrativo del repositorio. Su función principal es almacenar todos los ítems de configuración de gestión. Aquí se guardan documentos formales de la materia, como los programas, cronogramas y reglas de la cátedra que dictan el orden y desarrollo de la cursada.
+● **Informacion_De_La_Catedra/:** Este directorio funciona como el espacio administrativo del repositorio. Su función principal es almacenar todos los ítems de configuración. Aquí se guardan documentos formales de la materia, como los programas, cronogramas y reglas de la cátedra que dictan el orden y desarrollo de la cursada.
 
 ● **Material_De_Estudio/:** Actúa como el centro de acumulación y almacenamiento de la información teórica. Esta carpeta centraliza todo el contenido pasivo necesario para el aprendizaje, dividiéndose lógicamente en subcarpetas para facilitar la búsqueda:
 
@@ -77,6 +77,7 @@ Link al repositorio: https://github.com/frandemariaUTN/isw_repo_grupo_7
 | Guia de TP Evaluables                     | `Guia_TPS.pdf`                                            | `/Material_Practico/TP_Grupales/`                           | Cátedra           |
 | Templates Prácticos                       | `Template-<NombreTemplate>.docx/xlsx`                     | `/Material_Practico/Templates/`                             | Cátedra           |
 | Casos de Estudio para Intensivo           | `CEI-<NombreCaso>.pdf`                                    | `/Material_Practico/Casos_De_Estudio/Casos_Intensivo/`      | Cátedra           |
+| Casos de Estudio Resueltos          | `CE-<NombreCaso>-<Apellido>.pdf`                                    | `/Material_Practico/Casos_De_Estudio/Ejercicios_Practicos/`      | Producción Propia           |
 | Guía de Ejercicios Prácticos              | `GEP-<NombreGuia>.pdf`                                    | `/Material_Practico/Casos_De_Estudio/Ejercicios_Practicos/` | Cátedra           |
 | Archivo de Información de la Cátedra      | `Info_Catedra-<NombreInfo>.pdf/xlsx`                      | `/Informacion_De_La_Catedra/`                               | Cátedra           |
 | Bibliografía de la cátedra                | `BIBL-<NombreBibliografia>.pdf`                           | `/Material_De_Estudio/Bibliografia/<TemaBibliografia>/`     | Cátedra           |
@@ -142,5 +143,8 @@ Proponemos la siguiente estructura de nombrado de los commits según la/s activi
 | Versión (Tag) | Fecha    | Autor           | Descripción del Hito      |
 | ------------- | -------- | --------------- | ------------------------- |
 | v4.0          | 25/08/26 | Tomás Santillán | Entrega de Práctico 4 SCM |
+| ------------- | -------- | --------------- | ------------------------- |
+| v7.0          | 07/10/26 | Tomás Santillán | Entrega de Práctico 7 SCRUM |
+
 
 Universidad Tecnológica Nacional - Facultad Regional Córdoba | Ingeniería y Calidad de Software - 2026
