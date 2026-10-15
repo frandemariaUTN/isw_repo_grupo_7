@@ -24,3 +24,10 @@ TP6 - TDD | Grupo 7. Documento vivo: se completa a medida que avanzan los ciclos
 | D18 | Una sola función (`motivo_no_disponible`) alimenta la validación y la lista de días deshabilitados del calendario | El frontend y el backend no pueden contradecirse |
 | D19 | Edad máxima de 120 años como constante | Supuesto S6, pendiente de confirmar con el PO |
 | D20 | Para acelerar, los tests se escriben por grupo: un commit RED con todos los tests del grupo y un commit GREEN con el código | Se pierde el ciclo test por test, pero se conserva la evidencia Red-Green por grupo |
+| D21 | `crear_compra` acumula todos los errores y los lanza juntos en `ErroresDeValidacion`; la falta de sesión se rechaza de inmediato | El formulario puede marcar todos los campos incorrectos de una vez |
+| D22 | Los estados de la compra son un enum y las transiciones están en una función pura (`aplicar_resultado_de_pago`); una transición inválida deja el estado como está | Es idempotente ante avisos repetidos de Mercado Pago |
+| D23 | `RepositorioEnMemoria` define el contrato de repositorio (`siguiente_numero_de_orden`, `guardar`, `buscar`, `compras_de`) | El repositorio CSV tendrá que cumplir el mismo contrato (caso CSV-13) |
+| D24 | El límite de 10 cuenta las entradas de las compras no fallidas del usuario para esa fecha | Supuestos S2, S3 y S4 |
+| D25 | La conversión a entero se extrajo a `conversiones.py` (refactor) | Evita repetir la lógica en edad y cantidad |
+| D26 | El mail es un objeto `Mail` (destinatario, asunto, cuerpo) armado en el dominio; enviarlo es tarea de un adaptador | El dominio no depende de SMTP y se puede probar sin enviar nada |
+| D27 | `Compra` es inmutable (`frozen=True`) | Un cambio de estado produce una compra nueva, sin modificar la original |
