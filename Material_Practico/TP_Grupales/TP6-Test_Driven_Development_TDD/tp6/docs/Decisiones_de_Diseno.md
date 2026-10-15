@@ -17,3 +17,10 @@ TP6 - TDD | Grupo 7. Documento vivo: se completa a medida que avanzan los ciclos
 | D11 | El descuento se calcula con `precio // 2` | Los precios son enteros y pares, así que la división entera es exacta; si cambiaran a un valor impar habría que revisarlo |
 | D12 | `Visitante` es un `dataclass` inmutable (`frozen=True`) con edad y pase | Un visitante es un valor: no cambia después de creado, y se compara por contenido |
 | D13 | La tabla de precios se recibe como parámetro, con la tabla oficial como valor por defecto | Los tests pueden probar otros precios sin tocar el código, y la tabla por defecto nunca se modifica |
+| D14 | Las validaciones lanzan `ErrorDeValidacion` con `campo` y `mensaje` | La API puede mostrar cada error junto al campo del formulario |
+| D15 | La posición del visitante en los errores es 1-based (`visitantes.2.edad`) | Coincide con cómo lo ve la persona que carga el formulario |
+| D16 | La hora actual entra como `ahora` (datetime con zona horaria) y se convierte a UTC-3 fijo | Argentina no tiene horario de verano, y evita depender de la base de zonas horarias, que en Windows requiere instalar un paquete extra |
+| D17 | La fecha de visita acepta `date` o texto ISO (AAAA-MM-DD) | Es el formato que envía un campo de fecha o un datepicker |
+| D18 | Una sola función (`motivo_no_disponible`) alimenta la validación y la lista de días deshabilitados del calendario | El frontend y el backend no pueden contradecirse |
+| D19 | Edad máxima de 120 años como constante | Supuesto S6, pendiente de confirmar con el PO |
+| D20 | Para acelerar, los tests se escriben por grupo: un commit RED con todos los tests del grupo y un commit GREEN con el código | Se pierde el ciclo test por test, pero se conserva la evidencia Red-Green por grupo |
