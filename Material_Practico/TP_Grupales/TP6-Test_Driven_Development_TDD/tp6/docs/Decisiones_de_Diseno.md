@@ -13,3 +13,5 @@ TP6 - TDD | Grupo 7. Documento vivo: se completa a medida que avanzan los ciclos
 | D7 | Nombres de dominio en español, PEP8 verificado con flake8 (79 columnas) | Coherencia con el dominio explicado por el PO |
 | D8 | Montos como enteros en pesos | Los precios del parque son enteros; evita errores de redondeo de `float` |
 | D9 | Commits: `feat:` para Red y Green (con la fase en el mensaje) y `refactor:` para Refactor | Respeta el nombrado de commits del README del repositorio |
+| D10 | Las edades límite de los descuentos son constantes con nombre y no números sueltos | El código explica la regla del PO y un cambio de edad se hace en un solo lugar |
+| D11 | El descuento se calcula con `precio // 2` | Los precios son enteros y pares, así que la división entera es exacta; si cambiaran a un valor impar habría que revisarlo |
