@@ -4,3 +4,4 @@ from enum import Enum
 
 class Pase(Enum):
     COMUN = "COMUN"
+    VIP = "VIP"
