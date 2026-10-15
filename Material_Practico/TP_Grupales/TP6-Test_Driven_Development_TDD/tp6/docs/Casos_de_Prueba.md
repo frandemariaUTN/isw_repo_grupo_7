@@ -37,6 +37,18 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 
 **Estados de una compra:** `PENDIENTE_BOLETERIA`, `PENDIENTE_PAGO_ONLINE`, `PAGADA`, `FALLIDA`.
 
+**Dónde están los tests** (`tests/unit/`):
+
+| Archivo | Casos |
+| --- | --- |
+| `test_precios.py` | PRE-01 a PRE-13 |
+| `test_total_compra.py` | PRE-14 a PRE-16 |
+| `test_edades.py` | EDA-01 a EDA-08 |
+| `test_pases.py` | PAS-01 a PAS-05 |
+| `test_visitantes.py` | EDA-09, PAS-06, CAN-09 |
+| `test_calendario.py` | DIA-01 a DIA-09 y DIA-11 |
+| `test_fechas.py` | FEC-01 a FEC-17 y DIA-10 |
+
 **Estilo:** PEP8, tests con nombres descriptivos en español (`test_<regla>_<condicion>_<resultado>`), un `assert` conceptual por test, parametrización con `pytest.mark.parametrize` para casos similares.
 
 **Pruebas manuales / opcionales:** marcadas con `@pytest.mark.mp_sandbox`, `@pytest.mark.smtp_real` o `manual`. Quedan excluidas de la corrida por defecto.
@@ -60,7 +72,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 
 ---
 
-## 3. Pruebas unitarias (110)
+## 3. Pruebas unitarias (112)
 
 ### 3.1 Precios y descuentos (`PRE`)
 
@@ -81,7 +93,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | PRE-13 | VIP, 70 años | $10.000 | FAQ 6, 7 |
 | PRE-14 | Compra mixta: VIP 30, común 10, común 2, VIP 65 | Total $35.000 | FAQ 6, 7 |
 | PRE-15 | Compra donde todos tienen ≤ 3 años | Total $0 | FAQ 7 |
-| PRE-16 | Se cambia el precio VIP en la configuración a $25.000 | El cálculo refleja el nuevo valor (precios no hardcodeados) | Diseño |
+| PRE-16 | Se pasa una tabla de precios con VIP a $25.000 (dos tests: precio individual y total de compra) | El cálculo usa la tabla recibida: VIP 30 años $25.000; VIP 30 + VIP 10 años $37.500 (precios no hardcodeados) | Diseño |
 
 ### 3.2 Edad del visitante (`EDA`)
 
@@ -122,6 +134,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | DIA-08 | Con hoy = 14/10/2026, lista de días no disponibles del rango | Exactamente los lunes 19/10, 26/10, 02/11 y 09/11 | FAQ 2 |
 | DIA-09 | Con hoy = 20/12/2026, lista de días no disponibles | Los lunes 21/12, 28/12, 04/01, 11/01, 18/01 más el 25/12 y el 01/01 | FAQ 1, 2 |
 | DIA-10 | Fecha cerrada | El error indica el motivo: "el parque está cerrado ese día" | CA5 |
+| DIA-11 | Con hoy = 14/10/2026 a las 17:45, lista de días no disponibles | Incluye el 14/10 además de los lunes (hoy ya no se puede comprar) | FAQ 26, FAQ 2 |
 
 ### 3.5 Fecha de visita (`FEC`)
 
@@ -143,6 +156,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | FEC-14 | Hoy = 20/12/2026, fecha 02/01/2027 | Aceptada (cruce de año) | FAQ 25 |
 | FEC-15 | Hoy = 20/12/2026, fecha 01/01/2027 | Rechazada: feriado | FAQ 1 |
 | FEC-16 | Reloj en 23:30 hora Argentina (02:30 UTC del día siguiente) | "Hoy" sigue siendo el 14/10 (zona horaria correcta) | Diseño |
+| FEC-17 | Instante sin zona horaria | `ValueError`: el reloj siempre debe incluir zona horaria | Diseño |
 
 ### 3.6 Cantidad y límite de 10 entradas (`CAN`)
 
@@ -391,7 +405,7 @@ Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados
 
 | Nivel | Casos |
 | --- | --- |
-| Unitarias | 110 |
+| Unitarias | 112 |
 | Integración | 64 |
 | Sistema | 26 |
-| **Total** | **200** |
+| **Total** | **202** |
