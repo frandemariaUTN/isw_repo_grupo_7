@@ -15,3 +15,5 @@ TP6 - TDD | Grupo 7. Documento vivo: se completa a medida que avanzan los ciclos
 | D9 | Commits: `feat:` para Red y Green (con la fase en el mensaje) y `refactor:` para Refactor | Respeta el nombrado de commits del README del repositorio |
 | D10 | Las edades límite de los descuentos son constantes con nombre y no números sueltos | El código explica la regla del PO y un cambio de edad se hace en un solo lugar |
 | D11 | El descuento se calcula con `precio // 2` | Los precios son enteros y pares, así que la división entera es exacta; si cambiaran a un valor impar habría que revisarlo |
+| D12 | `Visitante` es un `dataclass` inmutable (`frozen=True`) con edad y pase | Un visitante es un valor: no cambia después de creado, y se compara por contenido |
+| D13 | La tabla de precios se recibe como parámetro, con la tabla oficial como valor por defecto | Los tests pueden probar otros precios sin tocar el código, y la tabla por defecto nunca se modifica |
