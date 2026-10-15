@@ -22,3 +22,16 @@ def test_pre_02_pase_vip_adulto_cuesta_20000():
 )
 def test_menores_o_iguales_a_3_anios_no_pagan_pase_comun(edad):
     assert calcular_precio(edad=edad, pase=Pase.COMUN) == 0
+    
+    
+
+@pytest.mark.parametrize(
+    "edad, esperado",
+    [
+        pytest.param(4, 5000, id="PRE-05"),
+        pytest.param(15, 5000, id="PRE-06"),
+        pytest.param(16, 10000, id="PRE-07"),
+    ],
+)
+def test_menores_o_iguales_a_15_anios_pagan_mitad_pase_comun(edad, esperado):
+    assert calcular_precio(edad=edad, pase=Pase.COMUN) == esperado
