@@ -24,3 +24,8 @@ def calcular_precio(edad, pase):
     if tiene_descuento_por_edad(edad):
         return precio // 2
     return precio
+
+
+
+def calcular_total(visitantes):
+    return sum(calcular_precio(v.edad, v.pase) for v in visitantes)
