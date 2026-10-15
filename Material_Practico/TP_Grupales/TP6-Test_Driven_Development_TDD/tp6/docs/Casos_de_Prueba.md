@@ -48,6 +48,11 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `test_visitantes.py` | EDA-09, PAS-06, CAN-09 |
 | `test_calendario.py` | DIA-01 a DIA-09 y DIA-11 |
 | `test_fechas.py` | FEC-01 a FEC-17 y DIA-10 |
+| `test_cantidades.py` | CAN-01 a CAN-07 |
+| `test_pagos.py` | PAG-01 a PAG-05 y PAG-08 a PAG-12 |
+| `test_usuarios.py` | USR-01 |
+| `test_compras.py` | ORD-01 a ORD-09, USR-02, USR-03, PAG-06, PAG-07, PAG-13, CAN-08 y CAN-10 a CAN-18 |
+| `test_mails.py` | MAI-01 a MAI-10 |
 
 **Estilo:** PEP8, tests con nombres descriptivos en español (`test_<regla>_<condicion>_<resultado>`), un `assert` conceptual por test, parametrización con `pytest.mark.parametrize` para casos similares.
 

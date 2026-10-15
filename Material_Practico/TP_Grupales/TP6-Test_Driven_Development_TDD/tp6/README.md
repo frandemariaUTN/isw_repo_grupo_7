@@ -159,8 +159,8 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 | `PRE` Total de compra y configuración | PRE-14 a PRE-16 | Hecho |
 | `EDA`, `PAS` | Validaciones de edad y pase | Hecho |
 | `DIA`, `FEC` | Calendario y reloj | Hecho |
-| `CAN` | Cantidad y límite de 10 | En curso (CAN-09 hecho) |
-| `PAG`, `ORD`, `USR`, `MAI` | Estados, orden, sesión y mail | Pendiente |
+| `CAN` | Cantidad y límite de 10 | Hecho |
+| `PAG`, `ORD`, `USR`, `MAI` | Estados, orden, sesión y mail | Hecho |
 | Integración y sistema | CSV, Mercado Pago, mail, API, navegador | Pendiente |
 
 Actualizar esta tabla al cerrar cada grupo.
