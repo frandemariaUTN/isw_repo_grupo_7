@@ -12,8 +12,7 @@ def test_pre_14_total_de_compra_mixta_suma_los_precios_individuales():
         Visitante(edad=65, pase=Pase.VIP),
     ]
     assert calcular_total(visitantes) == 35000
-    
-    
+
 
 def test_pre_15_total_es_cero_si_todos_los_visitantes_son_menores_de_3():
     visitantes = [
@@ -22,8 +21,7 @@ def test_pre_15_total_es_cero_si_todos_los_visitantes_son_menores_de_3():
         Visitante(edad=3, pase=Pase.COMUN),
     ]
     assert calcular_total(visitantes) == 0
-    
-    
+
 
 PRECIOS_PRUEBA = {Pase.COMUN: 10000, Pase.VIP: 25000}
 

@@ -9,11 +9,8 @@ def test_pre_01_pase_comun_adulto_cuesta_10000():
     assert calcular_precio(edad=30, pase=Pase.COMUN) == 10000
 
 
-
 def test_pre_02_pase_vip_adulto_cuesta_20000():
     assert calcular_precio(edad=30, pase=Pase.VIP) == 20000
-    
-    
 
 
 @pytest.mark.parametrize(
@@ -22,8 +19,7 @@ def test_pre_02_pase_vip_adulto_cuesta_20000():
 )
 def test_menores_o_iguales_a_3_anios_no_pagan_pase_comun(edad):
     assert calcular_precio(edad=edad, pase=Pase.COMUN) == 0
-    
-    
+
 
 @pytest.mark.parametrize(
     "edad, esperado",
@@ -35,8 +31,6 @@ def test_menores_o_iguales_a_3_anios_no_pagan_pase_comun(edad):
 )
 def test_menores_o_iguales_a_15_anios_pagan_mitad_pase_comun(edad, esperado):
     assert calcular_precio(edad=edad, pase=Pase.COMUN) == esperado
-    
-    
 
 
 @pytest.mark.parametrize(
@@ -49,8 +43,6 @@ def test_menores_o_iguales_a_15_anios_pagan_mitad_pase_comun(edad, esperado):
 )
 def test_mayores_o_iguales_a_60_anios_pagan_mitad_pase_comun(edad, esperado):
     assert calcular_precio(edad=edad, pase=Pase.COMUN) == esperado
-    
-    
 
 
 @pytest.mark.parametrize(
