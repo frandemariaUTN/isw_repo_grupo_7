@@ -9,4 +9,9 @@ PRECIO_POR_PASE = {
 
 
 def calcular_precio(edad, pase):
-    return PRECIO_POR_PASE[pase]
+    precio = PRECIO_POR_PASE[pase]
+    if edad <= 3:
+        return 0
+    if edad <= 15:
+        return precio // 2
+    return precio
