@@ -14,4 +14,6 @@ def calcular_precio(edad, pase):
         return 0
     if edad <= 15:
         return precio // 2
+    if edad >= 60:
+        return precio // 2
     return precio
