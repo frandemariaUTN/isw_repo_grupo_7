@@ -15,3 +15,9 @@ def crear_error(campo, mensaje, posicion=None):
         f"visitantes.{posicion}.{campo}",
         f"Visitante {posicion}: {mensaje}",
     )
+
+
+class ErroresDeValidacion(Exception):
+    def __init__(self, errores):
+        super().__init__("; ".join(e.mensaje for e in errores))
+        self.errores = list(errores)
