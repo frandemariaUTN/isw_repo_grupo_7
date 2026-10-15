@@ -17,8 +17,8 @@ def tiene_descuento_por_edad(edad):
     return es_menor or es_mayor
 
 
-def calcular_precio(edad, pase):
-    precio = PRECIO_POR_PASE[pase]
+def calcular_precio(edad, pase, precios=PRECIO_POR_PASE):
+    precio = precios[pase]
     if edad <= EDAD_MAX_GRATIS:
         return 0
     if tiene_descuento_por_edad(edad):
@@ -26,6 +26,7 @@ def calcular_precio(edad, pase):
     return precio
 
 
-
-def calcular_total(visitantes):
-    return sum(calcular_precio(v.edad, v.pase) for v in visitantes)
+def calcular_total(visitantes, precios=PRECIO_POR_PASE):
+    return sum(
+        calcular_precio(v.edad, v.pase, precios) for v in visitantes
+    )
