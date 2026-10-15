@@ -1,4 +1,6 @@
 """Pruebas unitarias del calculo de precios (casos PRE)."""
+import pytest
+
 from ecoharmony.dominio.pases import Pase
 from ecoharmony.dominio.precios import calcular_precio
 
@@ -10,3 +12,13 @@ def test_pre_01_pase_comun_adulto_cuesta_10000():
 
 def test_pre_02_pase_vip_adulto_cuesta_20000():
     assert calcular_precio(edad=30, pase=Pase.VIP) == 20000
+    
+    
+
+
+@pytest.mark.parametrize(
+    "edad",
+    [pytest.param(0, id="PRE-03"), pytest.param(3, id="PRE-04")],
+)
+def test_menores_o_iguales_a_3_anios_no_pagan_pase_comun(edad):
+    assert calcular_precio(edad=edad, pase=Pase.COMUN) == 0
