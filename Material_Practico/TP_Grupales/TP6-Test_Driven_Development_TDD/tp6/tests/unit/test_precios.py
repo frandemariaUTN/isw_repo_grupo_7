@@ -49,3 +49,17 @@ def test_menores_o_iguales_a_15_anios_pagan_mitad_pase_comun(edad, esperado):
 )
 def test_mayores_o_iguales_a_60_anios_pagan_mitad_pase_comun(edad, esperado):
     assert calcular_precio(edad=edad, pase=Pase.COMUN) == esperado
+    
+    
+
+
+@pytest.mark.parametrize(
+    "edad, esperado",
+    [
+        pytest.param(3, 0, id="PRE-11"),
+        pytest.param(10, 10000, id="PRE-12"),
+        pytest.param(70, 10000, id="PRE-13"),
+    ],
+)
+def test_descuentos_por_edad_se_aplican_sobre_pase_vip(edad, esperado):
+    assert calcular_precio(edad=edad, pase=Pase.VIP) == esperado
