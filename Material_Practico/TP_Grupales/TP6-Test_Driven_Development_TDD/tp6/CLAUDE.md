@@ -54,7 +54,7 @@ Para avanzar más rápido se trabaja **por grupos de casos** (decisión D20): un
 
 ## 4. Arquitectura
 
-Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Adaptadores en `src/ecoharmony/persistencia/` (`RepositorioSQLite`) y `src/ecoharmony/notificaciones/` (`NotificadorSimulado`). Tests en `tests/unit/`, `tests/integration/` y, más adelante, `tests/system/`.
+Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Adaptadores en `src/ecoharmony/persistencia/` (`RepositorioSQLite`) y `src/ecoharmony/notificaciones/` (`NotificadorSimulado`). El caso de uso está en `src/ecoharmony/aplicacion/` (`ServicioDeCompra`: `comprar`, `pagar`, `cancelar`). Tests en `tests/unit/`, `tests/integration/` y, más adelante, `tests/system/`.
 
 | Módulo | Contenido |
 | --- | --- |
@@ -88,13 +88,12 @@ Convenciones de diseño:
 
 ## 6. Estado y próximos pasos
 
-**Hecho** (214 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR`, `BD`, `PSM` y `MAIL`.
+**Hecho** (229 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR`, `BD`, `PSM`, `MAIL` y `SRV`.
 
 **Pendiente**, en este orden (ver sección 7 de `docs/Casos_de_Prueba.md`):
 
-1. `SRV`: servicio que orquesta todo el flujo.
-2. `API`: capa Flask, incluidas las rutas de la pasarela.
-3. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
+1. `API`: capa Flask, incluidas las rutas de la pasarela.
+2. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
 
 ## 7. Cómo colaborar con el equipo
 

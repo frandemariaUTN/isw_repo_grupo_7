@@ -165,6 +165,7 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 | `TAR` | Validación de tarjeta | Hecho |
 | `BD` | Base de datos SQLite | Hecho |
 | `PSM`, `MAIL` | Pasarela de pago y mail simulados | Hecho |
-| Integración y sistema | Servicio de compra, API, navegador | Pendiente |
+| `SRV` | Servicio de compra | Hecho |
+| Integración y sistema | API (Flask), frontend y navegador | Pendiente |
 
 Actualizar esta tabla al cerrar cada grupo.
