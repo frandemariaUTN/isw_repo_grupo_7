@@ -54,7 +54,7 @@ Para avanzar más rápido se trabaja **por grupos de casos** (decisión D20): un
 
 ## 4. Arquitectura
 
-Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Adaptadores en `src/ecoharmony/persistencia/` (`RepositorioSQLite`). Tests en `tests/unit/`, `tests/integration/` y, más adelante, `tests/system/`.
+Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Adaptadores en `src/ecoharmony/persistencia/` (`RepositorioSQLite`) y `src/ecoharmony/notificaciones/` (`NotificadorSimulado`). Tests en `tests/unit/`, `tests/integration/` y, más adelante, `tests/system/`.
 
 | Módulo | Contenido |
 | --- | --- |
@@ -65,6 +65,7 @@ Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin int
 | `pagos.py` | Formas de pago, estados de la compra y transiciones |
 | `compras.py` | `Compra`, `crear_compra`, límite de 10, mensaje final |
 | `tarjetas.py` | Validación de tarjeta y `TarjetaValidada` (solo marca, últimos 4 y titular) |
+| `pasarela.py` | `PasarelaSimulada`: sesiones de pago con token y resultado según el titular |
 | `repositorio.py` | `RepositorioEnMemoria` (define el contrato del repositorio SQLite) |
 | `usuarios.py`, `mails.py`, `formatos.py`, `errores.py` | Usuario mock, armado del mail, formatos, errores |
 
@@ -87,14 +88,13 @@ Convenciones de diseño:
 
 ## 6. Estado y próximos pasos
 
-**Hecho** (192 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR` y `BD`.
+**Hecho** (214 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR`, `BD`, `PSM` y `MAIL`.
 
 **Pendiente**, en este orden (ver sección 7 de `docs/Casos_de_Prueba.md`):
 
-1. `PSM`: pasarela simulada (`pasarela.py`) y `MAIL`: notificador de mail simulado.
-2. `SRV`: servicio que orquesta todo el flujo.
-3. `API`: capa Flask, incluidas las rutas de la pasarela.
-4. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
+1. `SRV`: servicio que orquesta todo el flujo.
+2. `API`: capa Flask, incluidas las rutas de la pasarela.
+3. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
 
 ## 7. Cómo colaborar con el equipo
 

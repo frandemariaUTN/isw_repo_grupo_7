@@ -164,6 +164,7 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 | `PAG`, `ORD`, `USR`, `MAI` | Estados, orden, sesión y mail | Hecho |
 | `TAR` | Validación de tarjeta | Hecho |
 | `BD` | Base de datos SQLite | Hecho |
-| Integración y sistema | Pasarela simulada, mail simulado, servicio, API, navegador | Pendiente |
+| `PSM`, `MAIL` | Pasarela de pago y mail simulados | Hecho |
+| Integración y sistema | Servicio de compra, API, navegador | Pendiente |
 
 Actualizar esta tabla al cerrar cada grupo.
