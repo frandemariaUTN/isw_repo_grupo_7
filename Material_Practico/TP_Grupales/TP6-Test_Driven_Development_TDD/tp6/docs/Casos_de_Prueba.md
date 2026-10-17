@@ -13,7 +13,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | Nivel | Prefijos | Qué prueba | Dependencias |
 | --- | --- | --- | --- |
 | Unitaria | `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR` | Reglas de dominio puras | Ninguna (reloj inyectado) |
-| Integración | `BD`, `PSM`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí | Base SQLite temporal, pasarela simulada y mail falso, Flask test client |
+| Integración | `BD`, `PSM`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí | Base SQLite temporal, pasarela simulada y mail simulado, Flask test client |
 | Sistema | `SIS` | Flujo completo desde el navegador | App levantada con fakes, base SQLite temporal, reloj fijo |
 
 **Reloj de referencia para los tests:** "hoy" = **miércoles 14/10/2026, 10:00** (hora de Argentina), salvo que el caso indique otra cosa.
@@ -58,7 +58,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 
 **Estilo:** PEP8, tests con nombres descriptivos en español (`test_<regla>_<condicion>_<resultado>`), un `assert` conceptual por test, parametrización con `pytest.mark.parametrize` para casos similares.
 
-**Pruebas manuales / opcionales:** marcadas con `@pytest.mark.smtp_real` o `@pytest.mark.manual`. Quedan excluidas de la corrida por defecto.
+**Pruebas manuales / opcionales:** marcadas con `@pytest.mark.manual`. Quedan excluidas de la corrida por defecto.
 
 ---
 
@@ -75,7 +75,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | S7 | Se puede comprar para hoy **antes de la apertura** (8:30), siempre que sea hasta las 17:30 | ¿Hay un horario mínimo de compra? |
 | S8 | Compra con tarjeta de **total $0** (todos ≤ 3 años): no pasa por la pasarela de pago, queda `PAGADA` | ¿Cómo se trata una compra sin costo? |
 | S9 | El mail se envía al **confirmar** la compra: en efectivo al crearla, con tarjeta al aprobarse el pago | ¿Cuándo debe llegar el mail? |
-| S10 | Si el envío del mail falla, **la compra se mantiene** y se informa un aviso | ¿Qué hacer si falla el mail? |
+| S10 | **Ya no aplica:** el mail se simula con un modal (FAQ 5), así que el envío no puede fallar | Resuelto por la FAQ 5 |
 | S11 | La pasarela simulada se abre en **la misma pestaña** (redirección) y vuelve a la app al terminar | Decisión del grupo |
 | S12 | El resultado del pago se elige con el **nombre del titular**, como en las tarjetas de prueba de Mercado Pago: `APRO` aprueba, `OTHE`, `FUND`, `SECU` y `EXPI` rechazan, `CONT` queda pendiente. Cualquier otro titular con tarjeta válida **se aprueba** | Decisión del grupo |
 | S13 | En la pasarela **no se reintenta** tras un rechazo ni tras cancelar: la compra pasa a `FALLIDA` y se vuelve a la app (extiende S4) | Decisión del grupo |
@@ -282,7 +282,7 @@ Datos de prueba: Mastercard `5031 7557 3453 0604`, Visa `4509 9535 6623 3704`, c
 
 ---
 
-## 4. Pruebas de integración (78)
+## 4. Pruebas de integración (73)
 
 ### 4.1 Base de datos SQLite (`BD`)
 
@@ -332,18 +332,15 @@ Reemplaza a la integración real con Mercado Pago (la FAQ 4 autoriza simularla).
 | PSM-18 | Crear sesión con monto $0 | Error: no hay nada que cobrar | S8 ⚠️ |
 | PSM-19 | Después de pagar | La sesión no conserva número de tarjeta ni código de seguridad | S15 ⚠️ |
 
-### 4.3 Notificador de mail (`MAIL`)
+### 4.3 Notificador de mail simulado (`MAIL`)
+
+La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a tu@email.com"). El notificador simulado no se conecta a ningún servidor: registra el mail y la app muestra el modal. Queda detrás de la interfaz `Notificador`, así que se podría sumar un envío real sin tocar el resto.
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| MAIL-01 | Notificador falso | Registra el mail enviado y se puede inspeccionar | CA3 |
-| MAIL-02 | SMTP con `smtplib` simulado | Mensaje con From, To y Subject correctos | CA3 |
-| MAIL-03 | Mensaje con acentos y ñ | Codificado en UTF-8 sin errores | CA3 |
-| MAIL-04 | Falla la conexión SMTP | Lanza `NotificadorError` | S10 |
-| MAIL-05 | Credenciales SMTP inválidas | Lanza `NotificadorError` | S10 |
-| MAIL-06 | Destinatario con formato inválido | Error sin intentar el envío | CA3 |
-| MAIL-07 | Mensaje | Incluye parte de texto plano y parte HTML | CA3 |
-| MAIL-08 | `@pytest.mark.smtp_real`: envío a una casilla de pruebas | Mail recibido | CA3 |
+| MAIL-01 | Notificador simulado | Registra el mail enviado y se puede inspeccionar | CA3, FAQ 5 |
+| MAIL-02 | Destinatario con formato inválido | Error sin registrar el envío | CA3 |
+| MAIL-03 | Resultado del envío | Informa la dirección a la que se envió (la usa el modal) | FAQ 5 |
 
 ### 4.4 Servicio de compra (`SRV`)
 
@@ -360,7 +357,7 @@ Reemplaza a la integración real con Mercado Pago (la FAQ 4 autoriza simularla).
 | SRV-09 | Con base SQLite real: dos compras de 5 y una de 1 | Las dos primeras pasan, la tercera se rechaza | FAQ 27 |
 | SRV-10 | Validación fallida | La base queda sin cambios | CA1 |
 | SRV-11 | Compra `FALLIDA` previa de 10 entradas | Se puede volver a comprar 10 ⚠️ | S4 |
-| SRV-12 | Falla el envío del mail | La compra se mantiene y se informa aviso ⚠️ | S10 |
+| SRV-12 | Compra confirmada (efectivo o pago aprobado) | El resultado incluye el email al que se envió el mail, para mostrar el modal | FAQ 5 |
 | SRV-13 | Tarjeta con total $0 | `PAGADA`, mail enviado, sin crear sesión de pago ⚠️ | S8 |
 | SRV-14 | Pago aprobado | El resultado incluye el mensaje final con cantidad y fecha | CA8 |
 
@@ -395,7 +392,7 @@ Reemplaza a la integración real con Mercado Pago (la FAQ 4 autoriza simularla).
 
 ## 5. Pruebas de sistema (35)
 
-Se ejecutan con un navegador automatizado (Playwright), la app levantada con la pasarela simulada y el mail falso, base SQLite temporal y reloj fijo.
+Se ejecutan con un navegador automatizado (Playwright), la app levantada con la pasarela simulada y el mail simulado, base SQLite temporal y reloj fijo.
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
@@ -415,7 +412,7 @@ Se ejecutan con un navegador automatizado (Playwright), la app levantada con la 
 | SIS-14 | Ingresar edades 2, 10 y 65 | Se ve el descuento aplicado en cada subtotal | FAQ 7 |
 | SIS-15 | Confirmar con datos inválidos (sin forma de pago, fecha cerrada, 11 entradas) | **No se redirige** a la pasarela y se muestran los errores | CA1, CA4 |
 | SIS-16 | Pantalla final de una compra aprobada | Muestra cantidad de entradas y fecha de visita | CA8 |
-| SIS-17 | Falla el mail | La compra se completa y se muestra un aviso ⚠️ | S10 |
+| SIS-17 | Compra confirmada | Se muestra el modal "Mail enviado a …" con el email del usuario, y se cierra con "Aceptar" | CA3, FAQ 5 |
 | SIS-18 | Viewport 375×667 (celular) en el formulario | Sin scroll horizontal y controles táctiles de al menos 44 px | FAQ 24 |
 | SIS-19 | Viewport 768×1024 (tablet) | Layout correcto sin elementos cortados | FAQ 24 |
 | SIS-20 | Viewport 1280×800 (escritorio) | Layout correcto | FAQ 24 |
@@ -443,7 +440,7 @@ Se ejecutan con un navegador automatizado (Playwright), la app levantada con la 
 | --- | --- |
 | CA1 Fecha, cantidad, edad y pase | EDA, PAS, CAN-08/09, ORD-02, SIS-12/13 |
 | CA2 Fecha actual o futura | FEC-01 a FEC-07, SIS-10 |
-| CA3 Mail de confirmación | MAI, MAIL, SRV-01/04, SIS-01/05 |
+| CA3 Mail de confirmación | MAI, MAIL, SRV-01/04/12, SIS-01/05/17 |
 | CA4 Pago con tarjeta (pasarela simulada) | PAG-07 a PAG-10, TAR, PSM, SRV-02 a SRV-08, API-05 y API-12 a API-20, SIS-01, SIS-15 y SIS-27 a SIS-34 |
 | CA5 Parque abierto | DIA, FEC-10/15, API-07, SIS-03/08/09 |
 | CA6 Forma de pago | PAG-01 a PAG-05, API-06, SIS-02/05/15 |
@@ -464,7 +461,7 @@ De menor a mayor complejidad, empezando por el dominio puro:
 5. `MAI`: armado del contenido del mail.
 6. `TAR`: validación de la tarjeta (unitarias).
 7. `BD`: persistencia real en SQLite.
-8. `PSM` y `MAIL`: pasarela simulada y notificador de mail (falso primero, SMTP real después).
+8. `PSM` y `MAIL`: pasarela simulada y notificador de mail simulado.
 9. `SRV`: orquestación de todo el flujo.
 10. `API`: capa Flask, incluidas las rutas de la pasarela.
 11. `SIS`: frontend responsive, pasarela simulada y pruebas end-to-end.
@@ -478,6 +475,6 @@ Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados
 | Nivel | Casos |
 | --- | --- |
 | Unitarias | 137 |
-| Integración | 78 |
+| Integración | 73 |
 | Sistema | 35 |
-| **Total** | **250** |
+| **Total** | **245** |
