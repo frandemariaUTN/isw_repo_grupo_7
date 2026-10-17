@@ -36,3 +36,5 @@ TP6 - TDD | Grupo 7. Documento vivo: se completa a medida que avanzan los ciclos
 | D30 | El resultado del pago simulado se elige con el nombre del titular, como en las tarjetas de prueba de Mercado Pago | Permite demostrar aprobaciones y rechazos sin interfaces extra |
 | D31 | Todas las validaciones de la compra se hacen antes de crear la sesión de pago; la pasarela solo valida la tarjeta | El visitante no llega a pagar una compra inválida |
 | D32 | Los datos de la tarjeta nunca se persisten: solo se conservan marca y últimos 4 dígitos | Seguridad básica, aunque el pago sea simulado |
+| D33 | El número de tarjeta se valida con largo de 13 a 19 dígitos y el algoritmo de Luhn; la marca se detecta por el primer dígito (4 Visa, 5 Mastercard, otra "Tarjeta") | Son las reglas que usan las pasarelas reales y detectan errores de tipeo sin consultar ningún servicio |
+| D34 | El titular acepta letras (con acentos y ñ) separadas por espacios, apóstrofos o guiones | Admite nombres como "O'Connor" o "Ana-Lía" y rechaza números o símbolos |
