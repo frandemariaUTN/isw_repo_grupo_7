@@ -1,1 +1,1 @@
-"""Reglas de negocio puras, sin Flask ni CSV."""
+"""Reglas de negocio puras, sin Flask ni base de datos."""
