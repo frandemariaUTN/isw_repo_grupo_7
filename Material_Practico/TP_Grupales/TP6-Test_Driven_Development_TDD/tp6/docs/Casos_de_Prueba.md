@@ -38,7 +38,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 
 **Estados de una compra:** `PENDIENTE_BOLETERIA`, `PENDIENTE_PAGO_ONLINE`, `PAGADA`, `FALLIDA`.
 
-**Dónde están los tests** (`tests/unit/`):
+**Dónde están los tests** (`tests/unit/` y `tests/integration/`):
 
 | Archivo | Casos |
 | --- | --- |
@@ -55,6 +55,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `test_compras.py` | ORD-01 a ORD-09, USR-02, USR-03, PAG-06, PAG-07, PAG-13, CAN-08 y CAN-10 a CAN-18 |
 | `test_mails.py` | MAI-01 a MAI-10 |
 | `test_tarjetas.py` | TAR-01 a TAR-25 |
+| `integration/test_repositorio_sqlite.py` | BD-01 a BD-15 (los casos de contrato, BD-12, se corren contra memoria y SQLite) |
 
 **Estilo:** PEP8, tests con nombres descriptivos en español (`test_<regla>_<condicion>_<resultado>`), un `assert` conceptual por test, parametrización con `pytest.mark.parametrize` para casos similares.
 
