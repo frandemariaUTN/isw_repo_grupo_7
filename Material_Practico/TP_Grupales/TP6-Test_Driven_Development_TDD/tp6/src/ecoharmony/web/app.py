@@ -5,7 +5,7 @@ from pathlib import Path
 from flask import Flask, jsonify, redirect, render_template, request, url_for
 
 from ecoharmony.aplicacion.servicio_de_compra import ServicioDeCompra
-from ecoharmony.dominio.calendario import dias_no_disponibles
+from ecoharmony.dominio.calendario import dias_no_disponibles, sumar_un_mes
 from ecoharmony.dominio.compras import mensaje_final
 from ecoharmony.dominio.errores import ErrorDeValidacion, ErroresDeValidacion
 from ecoharmony.dominio.formatos import formatear_fecha, formatear_monto
@@ -21,7 +21,7 @@ from ecoharmony.dominio.precios import (
     EDAD_MIN_MAYOR_CON_DESCUENTO,
     PRECIO_POR_PASE,
 )
-from ecoharmony.dominio.reloj import ZONA_PARQUE
+from ecoharmony.dominio.reloj import ZONA_PARQUE, hoy_local
 from ecoharmony.dominio.usuarios import usuario_mock
 from ecoharmony.notificaciones.notificador_simulado import (
     NotificadorSimulado,
@@ -61,8 +61,13 @@ def crear_app(
 
     @app.get("/api/dias-no-disponibles")
     def api_dias_no_disponibles():
-        dias = dias_no_disponibles(reloj())
-        return jsonify(dias=[dia.isoformat() for dia in dias])
+        ahora = reloj()
+        hoy = hoy_local(ahora)
+        return jsonify(
+            dias=[dia.isoformat() for dia in dias_no_disponibles(ahora)],
+            desde=hoy.isoformat(),
+            hasta=sumar_un_mes(hoy).isoformat(),
+        )
 
     @app.get("/api/precios")
     def api_precios():
