@@ -167,7 +167,8 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 | `BD` | Base de datos SQLite | Hecho |
 | `PSM`, `MAIL` | Pasarela de pago y mail simulados | Hecho |
 | `SRV` | Servicio de compra | Hecho |
-| `API` | Capa web Flask (pantallas mínimas) | Hecho |
-| `SIS` | Frontend responsive y pruebas en el navegador | Pendiente |
+| `API` | Capa web Flask | Hecho |
+| Frontend | Pantallas responsive: compra, pasarela, resultado y modal del mail | Hecho |
+| `SIS` | Pruebas de sistema en el navegador | Pendiente |
 
 Actualizar esta tabla al cerrar cada grupo.

@@ -88,11 +88,11 @@ Convenciones de diseño:
 
 ## 6. Estado y próximos pasos
 
-**Hecho** (252 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR`, `BD`, `PSM`, `MAIL`, `SRV` y `API`. Las pantallas actuales son HTML mínimo: el diseño va en `SIS`.
+**Hecho** (252 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR`, `BD`, `PSM`, `MAIL`, `SRV` y `API`. El frontend (plantillas en `web/templates/`, CSS y JS en `web/static/`) está hecho; falta probarlo con `SIS`.
 
 **Pendiente**, en este orden (ver sección 7 de `docs/Casos_de_Prueba.md`):
 
-1. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
+1. `SIS`: pruebas end-to-end con Playwright (puede usar el Edge instalado, sin descargar Chromium).
 
 ## 7. Cómo colaborar con el equipo
 
