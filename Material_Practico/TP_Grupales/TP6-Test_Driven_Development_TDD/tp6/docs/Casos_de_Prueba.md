@@ -59,6 +59,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `integration/test_pasarela.py` | PSM-01 a PSM-19 |
 | `integration/test_notificador.py` | MAIL-01 a MAIL-03 |
 | `integration/test_servicio_de_compra.py` | SRV-01 a SRV-14 |
+| `integration/test_api.py` | API-01 a API-22 |
 
 **Estilo:** PEP8, tests con nombres descriptivos en español (`test_<regla>_<condicion>_<resultado>`), un `assert` conceptual por test, parametrización con `pytest.mark.parametrize` para casos similares.
 
