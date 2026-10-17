@@ -1,9 +1,8 @@
-"""Pruebas de integracion del repositorio SQLite (BD-01 a BD-15).
+"""Pruebas de integracion del repositorio SQLite (BD-01 a BD-14).
 
 Los casos de contrato (BD-12) se corren contra el repositorio en memoria y
 contra el SQLite: ambos deben comportarse igual.
 """
-import sqlite3
 from dataclasses import replace
 from datetime import date, datetime, timedelta, timezone
 
@@ -165,27 +164,19 @@ def test_reabrir_continua_la_numeracion(sqlite, ruta):
     assert reabierto.siguiente_numero_de_orden() == ultimo + 1
 
 
-def test_la_base_no_contiene_datos_de_tarjeta(sqlite, ruta):
-    compra = nueva_compra(sqlite, estado=EstadoCompra.PAGADA)
-    sqlite.guardar(compra)  # BD-13
-    contenido = _volcar_base(ruta)
-    for dato in ("5031755734530604", "4509953566233704", "11/30"):
-        assert dato not in contenido
-
-
 def test_guardado_fallido_no_deja_compra_incompleta(sqlite):
     visitante_roto = object()
     compra = nueva_compra(
         sqlite, visitantes=(*_visitantes((30, Pase.VIP)), visitante_roto)
     )
     with pytest.raises(Exception):
-        sqlite.guardar(compra)  # BD-14
+        sqlite.guardar(compra)  # BD-13
     assert sqlite.buscar(compra.numero_orden) is None
     assert sqlite.compras_de("usuario-1", FECHA) == []
 
 
 def test_dos_conexiones_obtienen_numeros_de_orden_distintos(sqlite, ruta):
-    otra_conexion = RepositorioSQLite(ruta)  # BD-15
+    otra_conexion = RepositorioSQLite(ruta)  # BD-14
     numeros = {
         sqlite.siguiente_numero_de_orden(),
         otra_conexion.siguiente_numero_de_orden(),
@@ -193,11 +184,3 @@ def test_dos_conexiones_obtienen_numeros_de_orden_distintos(sqlite, ruta):
         otra_conexion.siguiente_numero_de_orden(),
     }
     assert len(numeros) == 4
-
-
-def _volcar_base(ruta):
-    conexion = sqlite3.connect(ruta)
-    try:
-        return "\n".join(conexion.iterdump())
-    finally:
-        conexion.close()

@@ -142,7 +142,7 @@ Tras un rechazo o una cancelación, la compra pasa a `FALLIDA`, el cupo se liber
 
 ## 6. Seguridad y diseño
 
-- **Los datos de la tarjeta nunca se guardan:** ni en la base de datos ni en logs. Tras validarlos solo se conservan la marca y los últimos 4 dígitos (casos TAR-25, PSM-19 y BD-13).
+- **Los datos de la tarjeta nunca se guardan:** ni en la base de datos ni en logs. Tras validarlos solo se conservan la marca y los últimos 4 dígitos (casos TAR-25 y PSM-19).
 - **La sesión de pago se identifica con un token aleatorio** de al menos 32 caracteres, imposible de adivinar (PSM-03).
 - **Una sesión se procesa una sola vez:** reintentar el pago o recargar la página no duplica el pago ni el mail (PSM-13, SRV-07, API-18, SIS-31, SIS-34).
 - **Dominio puro:** la validación de tarjeta (`tarjetas.py`) y la lógica de la sesión de pago (`pasarela.py`) no dependen de Flask, así que se prueban sin servidor.

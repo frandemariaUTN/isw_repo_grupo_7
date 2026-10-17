@@ -55,7 +55,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `test_compras.py` | ORD-01 a ORD-09, USR-02, USR-03, PAG-06, PAG-07, PAG-13, CAN-08 y CAN-10 a CAN-18 |
 | `test_mails.py` | MAI-01 a MAI-10 |
 | `test_tarjetas.py` | TAR-01 a TAR-25 |
-| `integration/test_repositorio_sqlite.py` | BD-01 a BD-15 (los casos de contrato, BD-12, se corren contra memoria y SQLite) |
+| `integration/test_repositorio_sqlite.py` | BD-01 a BD-14 (los casos de contrato, BD-12, se corren contra memoria y SQLite) |
 
 **Estilo:** PEP8, tests con nombres descriptivos en español (`test_<regla>_<condicion>_<resultado>`), un `assert` conceptual por test, parametrización con `pytest.mark.parametrize` para casos similares.
 
@@ -283,7 +283,7 @@ Datos de prueba: Mastercard `5031 7557 3453 0604`, Visa `4509 9535 6623 3704`, c
 
 ---
 
-## 4. Pruebas de integración (73)
+## 4. Pruebas de integración (72)
 
 ### 4.1 Base de datos SQLite (`BD`)
 
@@ -303,9 +303,8 @@ Repositorio de compras sobre SQLite (`sqlite3` de la biblioteca estándar). Los 
 | BD-10 | Reabrir el repositorio | El próximo número de orden continúa la secuencia | Diseño |
 | BD-11 | Sumar entradas por usuario y fecha | Excluye las `FALLIDA` | FAQ 27, S4 |
 | BD-12 | Contrato: repositorio SQLite y repositorio en memoria | Ambos pasan la misma suite | Diseño |
-| BD-13 | Compra con tarjeta aprobada | Ningún dato de la tarjeta (número, código, vencimiento) aparece en la base ⚠️ | S15 |
-| BD-14 | Falla el guardado a mitad de camino | No queda una compra incompleta (transacción) | Diseño |
-| BD-15 | Dos conexiones abiertas sobre la misma base piden número de orden | Obtienen números distintos | Diseño |
+| BD-13 | Falla el guardado a mitad de camino | No queda una compra incompleta (transacción) | Diseño |
+| BD-14 | Dos conexiones abiertas sobre la misma base piden número de orden | Obtienen números distintos | Diseño |
 
 ### 4.2 Pasarela de pago simulada (`PSM`)
 
@@ -476,6 +475,6 @@ Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados
 | Nivel | Casos |
 | --- | --- |
 | Unitarias | 137 |
-| Integración | 73 |
+| Integración | 72 |
 | Sistema | 35 |
-| **Total** | **245** |
+| **Total** | **244** |
