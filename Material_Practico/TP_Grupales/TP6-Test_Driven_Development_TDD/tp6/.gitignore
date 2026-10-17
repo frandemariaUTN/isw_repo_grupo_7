@@ -3,4 +3,5 @@ __pycache__/
 .pytest_cache/
 .venv/
 .env
-data/*.csv
+data/*.db
+data/*.db-journal

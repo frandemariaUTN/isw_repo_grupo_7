@@ -8,7 +8,7 @@ Implementación de la user story **"Comprar entradas"** aplicando Desarrollo Con
 
 ## 1. Qué se construye
 
-Una aplicación web responsive (backend en Python, persistencia en CSV) donde un visitante compra entradas al parque indicando fecha, cantidad, edad de cada visitante, tipo de pase y forma de pago (efectivo, o tarjeta mediante una **pasarela de pago simulada** con el aspecto de Mercado Pago). Al confirmar, recibe un mail de confirmación.
+Una aplicación web responsive (backend en Python, persistencia en SQLite) donde un visitante compra entradas al parque indicando fecha, cantidad, edad de cada visitante, tipo de pase y forma de pago (efectivo, o tarjeta mediante una **pasarela de pago simulada** con el aspecto de Mercado Pago). Al confirmar, recibe un mail de confirmación (simulado con un aviso en pantalla, como permite la FAQ 5).
 
 Las reglas de negocio salen de tres fuentes, que deben tener a mano:
 
@@ -56,19 +56,19 @@ flake8 src tests       # verificar PEP8 (no debe imprimir nada)
 ```text
 tp6/
 ├── src/ecoharmony/
-│   └── dominio/        # reglas de negocio puras (sin Flask ni CSV)
+│   └── dominio/        # reglas de negocio puras (sin Flask ni base de datos)
 ├── tests/
 │   └── unit/           # pruebas unitarias
 ├── docs/
 │   ├── Casos_de_Prueba.md          # lista de casos y supuestos
 │   └── Decisiones_de_Diseno.md     # justificación del diseño (entregable)
-├── data/               # archivos CSV de datos (no se versionan)
+├── data/               # base de datos SQLite (no se versiona)
 ├── pytest.ini          # configuración de pytest
 ├── .flake8             # reglas de estilo (79 columnas)
 └── requirements.txt
 ```
 
-A medida que avance el trabajo se suman las carpetas de integración, sistema, adaptadores (CSV, pasarela simulada, mail), la capa web y el frontend.
+A medida que avance el trabajo se suman las carpetas de integración, sistema, adaptadores (SQLite, pasarela simulada, mail), la capa web y el frontend.
 
 ---
 
@@ -100,14 +100,14 @@ Un test que pasa de entrada (porque el código ya generaliza) se commitea como `
 
 - `pytest` en verde (salvo en un RED, donde debe fallar solo el test nuevo).
 - `flake8 src tests` sin errores.
-- No subir `.venv/`, `.env` ni archivos de `data/*.csv` (ya están en el `.gitignore`).
+- No subir `.venv/`, `.env` ni la base de datos `data/*.db` (ya está en el `.gitignore`).
 
 ### Estilo y diseño
 
 - **PEP8**, líneas de hasta 79 caracteres.
 - Nombres de dominio en español (`Visitante`, `Entrada`, `calcular_precio`).
 - Tests con nombres descriptivos y, cuando se pueda, parametrizados con `pytest.param(..., id="PRE-05")` para que el ID del caso figure en el reporte.
-- El **dominio es puro**: sin Flask, sin CSV, sin llamadas a internet. Las dependencias externas (repositorio CSV, pasarela de pago, mail, reloj) se acceden a través de interfaces, con un adaptador real y uno falso para los tests.
+- El **dominio es puro**: sin Flask, sin base de datos, sin llamadas a internet. Las dependencias externas (repositorio SQLite, pasarela de pago, mail, reloj) se acceden a través de interfaces, con un adaptador real o simulado y uno falso para los tests.
 - La hora actual se inyecta, no se lee dentro de las reglas.
 - Los montos son enteros en pesos.
 
@@ -137,7 +137,7 @@ Mientras los docentes no respondan, se trabaja con los supuestos S1 a S10 de `do
 - S7: se puede comprar para hoy antes de la apertura, hasta las 17:30.
 - S8: una compra de $0 no pasa por la pasarela de pago.
 - S9: el mail se envía al confirmar la compra.
-- S10: si falla el mail, la compra se mantiene.
+- S10: ya no aplica, porque el mail se simula (FAQ 5).
 
 Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afectados, y se avisa al resto del equipo.
 
@@ -145,7 +145,7 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 
 ## 7. Trabajo en equipo
 
-- **Repartir por grupos de casos** (por ejemplo `DIA`/`FEC`, `CAN`/`PAG`, `CSV`) para tocar archivos distintos y evitar conflictos.
+- **Repartir por grupos de casos** (por ejemplo `DIA`/`FEC`, `CAN`/`PAG`, `BD`) para tocar archivos distintos y evitar conflictos.
 - Hacer `git pull --rebase` antes de cada `git push`, así el historial queda lineal.
 - Los archivos que todos editan son `Casos_de_Prueba.md` y `Decisiones_de_Diseno.md`: agregar las filas **al final** y commitear seguido.
 - Avisar al resto antes de cambiar una interfaz del dominio (nombre de función, parámetros), porque rompe los tests de los demás.
@@ -163,6 +163,6 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 | `CAN` | Cantidad y límite de 10 | Hecho |
 | `PAG`, `ORD`, `USR`, `MAI` | Estados, orden, sesión y mail | Hecho |
 | `TAR` | Validación de tarjeta | Hecho |
-| Integración y sistema | CSV, pasarela simulada, mail, API, navegador | Pendiente |
+| Integración y sistema | Base SQLite, pasarela simulada, mail simulado, API, navegador | Pendiente |
 
 Actualizar esta tabla al cerrar cada grupo.

@@ -7,7 +7,8 @@ Instrucciones del proyecto para Claude Code. Leelas antes de tocar nada.
 TP6 de Ingeniería y Calidad de Software (UTN FRC, Grupo 7): implementar la user story **"Comprar entradas"** del dominio **EcoHarmony Park** con **TDD** (Red-Green-Refactor).
 
 - Web responsive. Backend en Python 3.11+, tests con pytest, estilo PEP8 con flake8 (79 columnas).
-- Persistencia en archivos CSV. Capa web con Flask (todavía no existe).
+- Persistencia en SQLite (D35). Capa web con Flask (todavía no existe).
+- Mail de confirmación **simulado** con un modal "Mail enviado a …" (FAQ 5, D36).
 - Pago con tarjeta mediante una **pasarela de pago simulada** con el aspecto de Mercado Pago (no hay integración real).
 - Idioma: código de dominio, tests, commits y respuestas **en español**.
 
@@ -47,13 +48,13 @@ Para avanzar más rápido se trabaja **por grupos de casos** (decisión D20): un
 **Reglas de seguridad de git:**
 
 - Agregá archivos **por nombre** (`git add src/...`), nunca `git add .`.
-- No commitees `.venv/`, `.env`, `data/*.csv`, zips ni archivos temporales.
+- No commitees `.venv/`, `.env`, `data/*.db`, zips ni archivos temporales.
 - **No hagas `git push` ni `git pull` sin que se pida.**
 - Mostrá qué vas a commitear antes de hacerlo.
 
 ## 4. Arquitectura
 
-Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin CSV, sin internet). Tests en `tests/unit/` y, más adelante, `tests/integration/` y `tests/system/`.
+Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Tests en `tests/unit/` y, más adelante, `tests/integration/` y `tests/system/`.
 
 | Módulo | Contenido |
 | --- | --- |
@@ -64,7 +65,7 @@ Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin CSV, sin internet). Te
 | `pagos.py` | Formas de pago, estados de la compra y transiciones |
 | `compras.py` | `Compra`, `crear_compra`, límite de 10, mensaje final |
 | `tarjetas.py` | Validación de tarjeta y `TarjetaValidada` (solo marca, últimos 4 y titular) |
-| `repositorio.py` | `RepositorioEnMemoria` (define el contrato del repositorio CSV) |
+| `repositorio.py` | `RepositorioEnMemoria` (define el contrato del repositorio SQLite) |
 | `usuarios.py`, `mails.py`, `formatos.py`, `errores.py` | Usuario mock, armado del mail, formatos, errores |
 
 Convenciones de diseño:
@@ -72,8 +73,8 @@ Convenciones de diseño:
 - **El reloj se inyecta** como `ahora`: un `datetime` **con zona horaria** (UTC-3 fijo). Los tests nunca usan la hora real. "Hoy" de referencia en los tests: miércoles 14/10/2026 10:00.
 - **Montos como enteros en pesos.** Los precios llegan por parámetro con la tabla oficial como valor por defecto.
 - **Errores:** `ErrorDeValidacion(campo, mensaje)`; `crear_compra` junta todos y lanza `ErroresDeValidacion`.
-- **Dependencias externas detrás de interfaces** con una implementación real y una falsa (repositorio CSV y en memoria, notificador SMTP y falso).
-- **Los datos de tarjeta nunca se guardan** (ni en CSV ni en logs).
+- **Dependencias externas detrás de interfaces** con una implementación real o simulada y una falsa (repositorio SQLite y en memoria, notificador simulado).
+- **Los datos de tarjeta nunca se guardan** (ni en la base de datos ni en logs).
 
 ## 5. Reglas de negocio clave (resumen)
 
@@ -90,8 +91,8 @@ Convenciones de diseño:
 
 **Pendiente**, en este orden (ver sección 7 de `docs/Casos_de_Prueba.md`):
 
-1. `CSV`: repositorio CSV que cumpla el contrato de `RepositorioEnMemoria`.
-2. `PSM`: pasarela simulada (`pasarela.py`) y `MAIL`: notificador SMTP y falso.
+1. `BD`: repositorio SQLite que cumpla el contrato de `RepositorioEnMemoria`.
+2. `PSM`: pasarela simulada (`pasarela.py`) y `MAIL`: notificador de mail simulado.
 3. `SRV`: servicio que orquesta todo el flujo.
 4. `API`: capa Flask, incluidas las rutas de la pasarela.
 5. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
