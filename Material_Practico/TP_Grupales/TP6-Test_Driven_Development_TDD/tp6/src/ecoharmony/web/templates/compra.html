@@ -1,9 +1,100 @@
 {% extends "base.html" %}
 {% block titulo %}Comprar entradas | EcoHarmony Park{% endblock %}
+
+{% block heroe %}
+<div class="heroe">
+  <div class="heroe__texto">
+    <h1>Comprar entradas</h1>
+    <p>Elegí el día, sumá a tu grupo y listo.</p>
+  </div>
+  {% include "_rana.html" %}
+</div>
+{% endblock %}
+
 {% block contenido %}
-<main>
-  <h1>Comprar entradas</h1>
-  <p>Sesión iniciada como {{ usuario.email }}.</p>
-  <p>El formulario completo se construye en la etapa de frontend (SIS).</p>
+<main id="vista-compra" class="contenedor">
+  <noscript><p class="aviso">Para comprar entradas necesitás tener JavaScript activado.</p></noscript>
+
+  <section class="tarjeta aparecer" id="seccion-fecha" aria-labelledby="titulo-fecha">
+    <h2 id="titulo-fecha"><span class="paso">1</span> ¿Qué día venís?</h2>
+    <div class="calendario">
+      <div class="calendario__nav">
+        <button type="button" class="icono-boton" id="mes-anterior" aria-label="Mes anterior">&#8249;</button>
+        <span id="calendario-mes" class="calendario__mes" aria-live="polite"></span>
+        <button type="button" class="icono-boton" id="mes-siguiente" aria-label="Mes siguiente">&#8250;</button>
+      </div>
+      <div class="calendario__semana" aria-hidden="true">
+        <span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span><span>D</span>
+      </div>
+      <div class="calendario__dias" id="calendario-dias"></div>
+      <p class="calendario__leyenda"><span class="punto punto--cerrado"></span>Cerrado (lunes, 25/12 y 1/1)</p>
+    </div>
+    <p class="fecha-elegida" id="fecha-elegida">Tocá un día disponible.</p>
+    <p class="error" data-error="fecha_visita" role="alert"></p>
+  </section>
+
+  <section class="tarjeta aparecer" id="seccion-visitantes" aria-labelledby="titulo-visitantes">
+    <h2 id="titulo-visitantes"><span class="paso">2</span> ¿Quiénes vienen?</h2>
+    <div class="cantidad">
+      <span class="cantidad__texto">Entradas</span>
+      <div class="cantidad__control">
+        <button type="button" class="icono-boton" id="menos" aria-label="Quitar una entrada">&minus;</button>
+        <output id="cantidad-valor" aria-live="polite">1</output>
+        <button type="button" class="icono-boton" id="mas" aria-label="Agregar una entrada">+</button>
+      </div>
+    </div>
+    <p class="nota" id="aviso-maximo" hidden>Llegaste al máximo de 10 entradas por fecha.</p>
+    <p class="error" data-error="cantidad" role="alert"></p>
+    <p class="error" data-error="visitantes" role="alert"></p>
+    <div class="visitantes" id="visitantes"></div>
+    <p class="nota">Hasta 3 años no pagan. De 4 a 15 años y desde los 60 pagan la mitad.</p>
+  </section>
+
+  <section class="tarjeta aparecer" id="seccion-pago" aria-labelledby="titulo-pago">
+    <h2 id="titulo-pago"><span class="paso">3</span> ¿Cómo pagás?</h2>
+    <div class="opciones" role="radiogroup" aria-labelledby="titulo-pago">
+      <button type="button" class="opcion" role="radio" aria-checked="false" data-forma="efectivo">
+        <span class="opcion__icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/></svg>
+        </span>
+        <span class="opcion__texto"><strong>Efectivo</strong><small>Pagás en boletería el día de la visita</small></span>
+      </button>
+      <button type="button" class="opcion" role="radio" aria-checked="false" data-forma="tarjeta">
+        <span class="opcion__icono" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>
+        </span>
+        <span class="opcion__texto"><strong>Tarjeta</strong><small>Crédito o débito, a través de Mercado Pago</small></span>
+      </button>
+    </div>
+    <p class="error" data-error="forma_de_pago" role="alert"></p>
+  </section>
+
+  <p class="error error--general" data-error="general" role="alert"></p>
 </main>
+
+<div class="barra-total" id="barra-total">
+  <div class="barra-total__monto">
+    <span>Total</span>
+    <strong id="total">$0</strong>
+    <small id="total-detalle">1 entrada</small>
+  </div>
+  <button type="button" class="boton" id="confirmar">Confirmar compra</button>
+</div>
+
+<main id="vista-exito" class="contenedor" hidden>
+  <section class="tarjeta exito">
+    {% with clase="rana--festeja" %}{% include "_rana.html" %}{% endwith %}
+    <h2>¡Compra confirmada!</h2>
+    <p class="exito__mensaje" id="exito-mensaje"></p>
+    <p class="nota" id="exito-boleteria" hidden>Recordá abonar en boletería antes de ingresar al parque.</p>
+    <p class="exito__orden" id="exito-orden"></p>
+    <a class="boton boton--secundario" href="/">Hacer otra compra</a>
+  </section>
+</main>
+
+{% include "_modal_mail.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/compra.js') }}"></script>
 {% endblock %}

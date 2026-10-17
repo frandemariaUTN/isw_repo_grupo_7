@@ -2,10 +2,38 @@
 <html lang="es">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#386641">
   <title>{% block titulo %}EcoHarmony Park{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
 </head>
 <body>
+  <header class="cabecera">
+    <div class="cabecera__barra">
+      <a class="logo" href="/" aria-label="EcoHarmony Park, inicio">
+        <svg class="logo__icono" viewBox="0 0 32 32" aria-hidden="true">
+          <circle cx="16" cy="16" r="15" fill="#F2E8CF"/>
+          <path d="M9 22c0-8 6-13 15-13-1 9-6 14-13 14" fill="#6A994E"/>
+          <path d="M9 23c3-4 7-7 11-9" stroke="#386641" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        </svg>
+        <span>EcoHarmony <strong>Park</strong></span>
+      </a>
+      {% if usuario %}<span class="cabecera__usuario" title="{{ usuario.email }}">Hola, {{ usuario.email.split('@')[0] }}</span>{% endif %}
+    </div>
+    {% block heroe %}{% endblock %}
+    <svg class="cabecera__colinas" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
+      <path d="M0 22 Q60 4 130 18 T260 16 T400 12 V40 H0Z" fill="#A7C957"/>
+      <path d="M0 30 Q80 16 170 28 T330 24 T400 26 V40 H0Z" fill="#F2E8CF"/>
+    </svg>
+  </header>
+
   {% block contenido %}{% endblock %}
+
+  <div class="hojas" aria-hidden="true"></div>
+  <script src="{{ url_for('static', filename='js/comun.js') }}"></script>
+  {% block scripts %}{% endblock %}
 </body>
 </html>

@@ -1,35 +1,97 @@
-{% extends "base.html" %}
-{% block titulo %}Finalizá tu compra{% endblock %}
-{% block contenido %}
-<header>
-  <form method="post" action="{{ url_for('pasarela_cancelar', token=sesion.token) }}">
-    <button type="submit" aria-label="Volver">&larr;</button>
-  </form>
-  <h1>Finalizá tu compra</h1>
-</header>
-<main>
-  <section>
-    <h2>Tarjeta de crédito o débito</h2>
-    <form method="post" action="{{ url_for('pasarela_pagar', token=sesion.token) }}">
-      {% for campo, etiqueta, valor in [
-        ("numero", "Número de tarjeta", ""),
-        ("titular", "Nombre y apellido del titular", datos.titular),
-        ("vencimiento", "Vencimiento (MM/AA)", datos.vencimiento),
-        ("codigo", "Código de seguridad", ""),
-        ("dni", "DNI del titular", datos.dni),
-      ] %}
-      <label for="{{ campo }}">{{ etiqueta }}</label>
-      <input id="{{ campo }}" name="{{ campo }}" value="{{ valor }}">
-      {% if errores[campo] %}<p class="error">{{ errores[campo] }}</p>{% endif %}
-      {% endfor %}
-      <section>
-        <h2>Resumen de compra</h2>
-        <p>Entradas EcoHarmony Park: {{ cantidad }} {{ "entrada" if cantidad == 1 else "entradas" }}</p>
-        <p>Total: {{ sesion.monto | monto }}</p>
-      </section>
-      <p><small>Simulación con fines académicos. No se realiza ningún cobro real.</small></p>
-      <button type="submit">Pagar y finalizar</button>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#FFE600">
+  <title>Finalizá tu compra</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/pasarela.css') }}">
+</head>
+<body>
+  <header class="mp-cabecera">
+    <form method="post" action="{{ url_for('pasarela_cancelar', token=sesion.token) }}" id="form-cancelar">
+      <button type="submit" class="mp-volver" aria-label="Volver y cancelar el pago">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
     </form>
-  </section>
-</main>
-{% endblock %}
+    <h1>Finalizá tu compra</h1>
+  </header>
+
+  <main class="mp-contenido">
+    <h2 class="mp-titulo">¿Cómo querés pagar?</h2>
+
+    <form method="post" action="{{ url_for('pasarela_pagar', token=sesion.token) }}" id="form-pago" novalidate>
+      <section class="mp-tarjeta">
+        <div class="mp-medio">
+          <span class="mp-radio" aria-hidden="true"></span>
+          <span class="mp-medio__icono" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20M6 15h4"/></svg>
+          </span>
+          <strong>Tarjeta de crédito o débito</strong>
+        </div>
+
+        <div class="mp-campos">
+          <div class="mp-campo {{ 'mp-campo--error' if errores.numero }}">
+            <label for="numero">Número de tarjeta</label>
+            <div class="mp-entrada">
+              <input id="numero" name="numero" inputmode="numeric" autocomplete="cc-number"
+                placeholder="1234 1234 1234 1234" maxlength="23">
+              <span class="mp-marca" id="marca" aria-live="polite"></span>
+            </div>
+            {% if errores.numero %}<p class="mp-error">{{ errores.numero }}</p>{% endif %}
+          </div>
+
+          <div class="mp-campo {{ 'mp-campo--error' if errores.titular }}">
+            <label for="titular">Nombre del titular</label>
+            <input id="titular" name="titular" autocomplete="cc-name"
+              placeholder="Como figura en la tarjeta" value="{{ datos.titular }}">
+            {% if errores.titular %}<p class="mp-error">{{ errores.titular }}</p>{% endif %}
+          </div>
+
+          <div class="mp-fila">
+            <div class="mp-campo {{ 'mp-campo--error' if errores.vencimiento }}">
+              <label for="vencimiento">Vencimiento</label>
+              <input id="vencimiento" name="vencimiento" inputmode="numeric" autocomplete="cc-exp"
+                placeholder="MM/AA" maxlength="5" value="{{ datos.vencimiento }}">
+              {% if errores.vencimiento %}<p class="mp-error">{{ errores.vencimiento }}</p>{% endif %}
+            </div>
+            <div class="mp-campo {{ 'mp-campo--error' if errores.codigo }}">
+              <label for="codigo">Código de seguridad</label>
+              <input id="codigo" name="codigo" inputmode="numeric" autocomplete="cc-csc"
+                placeholder="123" maxlength="3">
+              {% if errores.codigo %}<p class="mp-error">{{ errores.codigo }}</p>{% endif %}
+            </div>
+          </div>
+
+          <div class="mp-campo {{ 'mp-campo--error' if errores.dni }}">
+            <label for="dni">DNI del titular</label>
+            <input id="dni" name="dni" inputmode="numeric" placeholder="12345678"
+              maxlength="8" value="{{ datos.dni }}">
+            {% if errores.dni %}<p class="mp-error">{{ errores.dni }}</p>{% endif %}
+          </div>
+        </div>
+      </section>
+
+      <h2 class="mp-titulo">Resumen de compra</h2>
+      <section class="mp-tarjeta mp-resumen">
+        <div class="mp-resumen__linea">
+          <span>Entradas EcoHarmony Park ({{ cantidad }} {{ "entrada" if cantidad == 1 else "entradas" }})</span>
+          <span>{{ sesion.monto | monto }}</span>
+        </div>
+        <div class="mp-resumen__total">
+          <span>Total</span>
+          <span class="mp-precio">$ {{ "{:,}".format(sesion.monto).replace(",", ".") }}<sup>00</sup></span>
+        </div>
+      </section>
+
+      <p class="mp-legal">Simulación con fines académicos. No se realiza ningún cobro real.</p>
+    </form>
+  </main>
+
+  <div class="mp-pie">
+    <button type="submit" form="form-pago" class="mp-boton" id="pagar">Pagar y finalizar</button>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/pasarela.js') }}"></script>
+</body>
+</html>

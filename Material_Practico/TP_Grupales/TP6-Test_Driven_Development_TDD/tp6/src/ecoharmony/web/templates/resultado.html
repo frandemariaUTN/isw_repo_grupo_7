@@ -1,16 +1,28 @@
 {% extends "base.html" %}
 {% block titulo %}{{ titulo }} | EcoHarmony Park{% endblock %}
+
 {% block contenido %}
-<main>
-  <h1>{{ titulo }}</h1>
-  <p>{{ mensaje }}</p>
-  {% if en_boleteria %}<p>Recordá abonar en boletería antes de ingresar al parque.</p>{% endif %}
-  {% if mail %}
-  <dialog open>
-    <p>Mail enviado a {{ mail }}</p>
-    <form method="dialog"><button>Aceptar</button></form>
-  </dialog>
-  {% endif %}
-  <p><a href="/">Volver al inicio</a></p>
+<main class="contenedor">
+  <section class="tarjeta exito {{ '' if exito else 'exito--problema' }}" data-exito="{{ 'si' if exito else 'no' }}">
+    {% with clase=("rana--festeja" if exito else "rana--triste") %}{% include "_rana.html" %}{% endwith %}
+    <h1>{{ titulo }}</h1>
+    <p class="exito__mensaje">{{ mensaje }}</p>
+    {% if en_boleteria %}<p class="nota">Recordá abonar en boletería antes de ingresar al parque.</p>{% endif %}
+    {% if exito %}
+    <a class="boton boton--secundario" href="/">Volver al inicio</a>
+    {% else %}
+    <a class="boton" href="/">Intentar una nueva compra</a>
+    {% endif %}
+  </section>
 </main>
+{% if mail %}{% include "_modal_mail.html" %}{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  if (document.querySelector('[data-exito="si"]')) {
+    EcoHarmony.lanzarHojas();
+    EcoHarmony.abrirModal("modal-mail", 700);
+  }
+</script>
 {% endblock %}

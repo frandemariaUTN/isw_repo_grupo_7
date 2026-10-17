@@ -1,0 +1,9 @@
+{# Modal que simula el envio del mail de confirmacion (FAQ 5). #}
+<dialog class="modal" id="modal-mail" aria-labelledby="modal-mail-titulo">
+  <div class="modal__sobre" aria-hidden="true">
+    <svg viewBox="0 0 48 36"><rect x="2" y="2" width="44" height="32" rx="4"/><path d="M4 5l20 16L44 5"/></svg>
+  </div>
+  <h2 id="modal-mail-titulo">Mail enviado</h2>
+  <p>Te enviamos la confirmación a<br><strong id="modal-mail-destino">{{ mail|default('') }}</strong></p>
+  <form method="dialog"><button class="boton">Aceptar</button></form>
+</dialog>

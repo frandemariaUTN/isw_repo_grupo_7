@@ -144,7 +144,9 @@ def crear_app(
         motivo = None
         if sesion is not None and sesion.numero_orden == numero_orden:
             motivo = sesion.motivo
-        return render_template("resultado.html", **_resultado(compra, motivo))
+        return render_template(
+            "resultado.html", usuario=usuario, **_resultado(compra, motivo)
+        )
 
     def _pantalla_de_pago(sesion, errores=None, datos=None):
         compra = repositorio.buscar(sesion.numero_orden)

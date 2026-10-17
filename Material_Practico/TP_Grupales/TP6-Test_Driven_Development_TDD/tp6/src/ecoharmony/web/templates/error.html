@@ -1,9 +1,12 @@
 {% extends "base.html" %}
 {% block titulo %}Página no encontrada | EcoHarmony Park{% endblock %}
 {% block contenido %}
-<main>
-  <h1>Página no encontrada</h1>
-  <p>El enlace no existe o ya no está disponible.</p>
-  <p><a href="/">Volver al inicio</a></p>
+<main class="contenedor">
+  <section class="tarjeta exito exito--problema">
+    {% with clase="rana--triste" %}{% include "_rana.html" %}{% endwith %}
+    <h1>Página no encontrada</h1>
+    <p class="exito__mensaje">El enlace no existe o ya no está disponible.</p>
+    <a class="boton" href="/">Volver al inicio</a>
+  </section>
 </main>
 {% endblock %}
