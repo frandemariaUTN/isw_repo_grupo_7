@@ -56,6 +56,8 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `test_mails.py` | MAI-01 a MAI-10 |
 | `test_tarjetas.py` | TAR-01 a TAR-25 |
 | `integration/test_repositorio_sqlite.py` | BD-01 a BD-14 (los casos de contrato, BD-12, se corren contra memoria y SQLite) |
+| `integration/test_pasarela.py` | PSM-01 a PSM-19 |
+| `integration/test_notificador.py` | MAIL-01 a MAIL-03 |
 
 **Estilo:** PEP8, tests con nombres descriptivos en español (`test_<regla>_<condicion>_<resultado>`), un `assert` conceptual por test, parametrización con `pytest.mark.parametrize` para casos similares.
 
