@@ -31,3 +31,8 @@ TP6 - TDD | Grupo 7. Documento vivo: se completa a medida que avanzan los ciclos
 | D25 | La conversión a entero se extrajo a `conversiones.py` (refactor) | Evita repetir la lógica en edad y cantidad |
 | D26 | El mail es un objeto `Mail` (destinatario, asunto, cuerpo) armado en el dominio; enviarlo es tarea de un adaptador | El dominio no depende de SMTP y se puede probar sin enviar nada |
 | D27 | `Compra` es inmutable (`frozen=True`) | Un cambio de estado produce una compra nueva, sin modificar la original |
+| D28 | Se simula la pasarela de Mercado Pago con una página propia en vez de integrarla | Evita credenciales y servicios externos, y la FAQ 4 autoriza simular el pago |
+| D29 | Cada pago con tarjeta tiene una sesión de pago identificada por un token aleatorio | La pasarela no necesita conocer al usuario y nadie puede adivinar otra sesión |
+| D30 | El resultado del pago simulado se elige con el nombre del titular, como en las tarjetas de prueba de Mercado Pago | Permite demostrar aprobaciones y rechazos sin interfaces extra |
+| D31 | Todas las validaciones de la compra se hacen antes de crear la sesión de pago; la pasarela solo valida la tarjeta | El visitante no llega a pagar una compra inválida |
+| D32 | Los datos de la tarjeta nunca se persisten: solo se conservan marca y últimos 4 dígitos | Seguridad básica, aunque el pago sea simulado |
