@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }} | EcoHarmony Park{% endblock %}
+{% block contenido %}
+<main>
+  <h1>{{ titulo }}</h1>
+  <p>{{ mensaje }}</p>
+  {% if en_boleteria %}<p>Recordá abonar en boletería antes de ingresar al parque.</p>{% endif %}
+  {% if mail %}
+  <dialog open>
+    <p>Mail enviado a {{ mail }}</p>
+    <form method="dialog"><button>Aceptar</button></form>
+  </dialog>
+  {% endif %}
+  <p><a href="/">Volver al inicio</a></p>
+</main>
+{% endblock %}

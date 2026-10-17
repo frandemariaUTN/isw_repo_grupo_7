@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block titulo %}Finalizá tu compra{% endblock %}
+{% block contenido %}
+<header>
+  <form method="post" action="{{ url_for('pasarela_cancelar', token=sesion.token) }}">
+    <button type="submit" aria-label="Volver">&larr;</button>
+  </form>
+  <h1>Finalizá tu compra</h1>
+</header>
+<main>
+  <section>
+    <h2>Tarjeta de crédito o débito</h2>
+    <form method="post" action="{{ url_for('pasarela_pagar', token=sesion.token) }}">
+      {% for campo, etiqueta, valor in [
+        ("numero", "Número de tarjeta", ""),
+        ("titular", "Nombre y apellido del titular", datos.titular),
+        ("vencimiento", "Vencimiento (MM/AA)", datos.vencimiento),
+        ("codigo", "Código de seguridad", ""),
+        ("dni", "DNI del titular", datos.dni),
+      ] %}
+      <label for="{{ campo }}">{{ etiqueta }}</label>
+      <input id="{{ campo }}" name="{{ campo }}" value="{{ valor }}">
+      {% if errores[campo] %}<p class="error">{{ errores[campo] }}</p>{% endif %}
+      {% endfor %}
+      <section>
+        <h2>Resumen de compra</h2>
+        <p>Entradas EcoHarmony Park: {{ cantidad }} {{ "entrada" if cantidad == 1 else "entradas" }}</p>
+        <p>Total: {{ sesion.monto | monto }}</p>
+      </section>
+      <p><small>Simulación con fines académicos. No se realiza ningún cobro real.</small></p>
+      <button type="submit">Pagar y finalizar</button>
+    </form>
+  </section>
+</main>
+{% endblock %}
