@@ -47,6 +47,7 @@ pytest                 # correr todos los tests
 pytest -v              # ver cada test con su resultado
 pytest -k PRE-05       # correr un caso por su ID
 flake8 src tests       # verificar PEP8 (no debe imprimir nada)
+python run.py          # levantar la app en http://127.0.0.1:5000
 ```
 
 ---
@@ -166,6 +167,7 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 | `BD` | Base de datos SQLite | Hecho |
 | `PSM`, `MAIL` | Pasarela de pago y mail simulados | Hecho |
 | `SRV` | Servicio de compra | Hecho |
-| Integración y sistema | API (Flask), frontend y navegador | Pendiente |
+| `API` | Capa web Flask (pantallas mínimas) | Hecho |
+| `SIS` | Frontend responsive y pruebas en el navegador | Pendiente |
 
 Actualizar esta tabla al cerrar cada grupo.

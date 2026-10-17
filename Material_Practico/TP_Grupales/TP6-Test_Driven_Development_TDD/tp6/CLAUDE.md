@@ -7,7 +7,7 @@ Instrucciones del proyecto para Claude Code. Leelas antes de tocar nada.
 TP6 de Ingeniería y Calidad de Software (UTN FRC, Grupo 7): implementar la user story **"Comprar entradas"** del dominio **EcoHarmony Park** con **TDD** (Red-Green-Refactor).
 
 - Web responsive. Backend en Python 3.11+, tests con pytest, estilo PEP8 con flake8 (79 columnas).
-- Persistencia en SQLite (D35). Capa web con Flask (todavía no existe).
+- Persistencia en SQLite (D35). Capa web con Flask en `src/ecoharmony/web/` (`python run.py` la levanta en http://127.0.0.1:5000).
 - Mail de confirmación **simulado** con un modal "Mail enviado a …" (FAQ 5, D36).
 - Pago con tarjeta mediante una **pasarela de pago simulada** con el aspecto de Mercado Pago (no hay integración real).
 - Idioma: código de dominio, tests, commits y respuestas **en español**.
@@ -88,12 +88,11 @@ Convenciones de diseño:
 
 ## 6. Estado y próximos pasos
 
-**Hecho** (229 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR`, `BD`, `PSM`, `MAIL` y `SRV`.
+**Hecho** (252 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR`, `BD`, `PSM`, `MAIL`, `SRV` y `API`. Las pantallas actuales son HTML mínimo: el diseño va en `SIS`.
 
 **Pendiente**, en este orden (ver sección 7 de `docs/Casos_de_Prueba.md`):
 
-1. `API`: capa Flask, incluidas las rutas de la pasarela.
-2. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
+1. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
 
 ## 7. Cómo colaborar con el equipo
 
