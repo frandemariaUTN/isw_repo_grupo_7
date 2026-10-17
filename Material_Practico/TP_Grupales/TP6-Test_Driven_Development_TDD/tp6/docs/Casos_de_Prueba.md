@@ -13,8 +13,8 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | Nivel | Prefijos | Qué prueba | Dependencias |
 | --- | --- | --- | --- |
 | Unitaria | `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR` | Reglas de dominio puras | Ninguna (reloj inyectado) |
-| Integración | `CSV`, `PSM`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí | CSV temporal, pasarela simulada y mail falso, Flask test client |
-| Sistema | `SIS` | Flujo completo desde el navegador | App levantada con fakes, CSV temporal, reloj fijo |
+| Integración | `BD`, `PSM`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí | Base SQLite temporal, pasarela simulada y mail falso, Flask test client |
+| Sistema | `SIS` | Flujo completo desde el navegador | App levantada con fakes, base SQLite temporal, reloj fijo |
 
 **Reloj de referencia para los tests:** "hoy" = **miércoles 14/10/2026, 10:00** (hora de Argentina), salvo que el caso indique otra cosa.
 
@@ -80,7 +80,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | S12 | El resultado del pago se elige con el **nombre del titular**, como en las tarjetas de prueba de Mercado Pago: `APRO` aprueba, `OTHE`, `FUND`, `SECU` y `EXPI` rechazan, `CONT` queda pendiente. Cualquier otro titular con tarjeta válida **se aprueba** | Decisión del grupo |
 | S13 | En la pasarela **no se reintenta** tras un rechazo ni tras cancelar: la compra pasa a `FALLIDA` y se vuelve a la app (extiende S4) | Decisión del grupo |
 | S14 | La sesión de pago **no vence por tiempo** | Decisión del grupo |
-| S15 | Los datos de la tarjeta **nunca se guardan** (ni en CSV ni en logs): tras validar solo se conservan marca y últimos 4 dígitos | Decisión del grupo (seguridad) |
+| S15 | Los datos de la tarjeta **nunca se guardan** (ni en la base de datos ni en logs): tras validar solo se conservan marca y últimos 4 dígitos | Decisión del grupo (seguridad) |
 
 ---
 
@@ -284,25 +284,27 @@ Datos de prueba: Mastercard `5031 7557 3453 0604`, Visa `4509 9535 6623 3704`, c
 
 ## 4. Pruebas de integración (78)
 
-### 4.1 Repositorio CSV (`CSV`)
+### 4.1 Base de datos SQLite (`BD`)
+
+Repositorio de compras sobre SQLite (`sqlite3` de la biblioteca estándar). Los tests usan una base temporal por test (`tmp_path`).
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| CSV-01 | Primer guardado con archivo inexistente | Crea el archivo con encabezado | Diseño |
-| CSV-02 | Guardar y recuperar por número de orden | La orden recuperada es igual a la guardada | Diseño |
-| CSV-03 | Guardar dos compras | Ninguna pisa a la otra | Diseño |
-| CSV-04 | Guardar compra con 4 visitantes | Se recuperan los 4, en orden | Diseño |
-| CSV-05 | Listar compras por usuario y fecha | Devuelve solo las que coinciden | FAQ 27 |
-| CSV-06 | Buscar orden inexistente | Devuelve `None` | Diseño |
-| CSV-07 | Actualizar estado de una compra | El cambio persiste al releer | CA4 |
-| CSV-08 | Campos con acentos, ñ y comas | Se guardan y leen sin alterarse | Diseño |
-| CSV-09 | Archivo con solo encabezado | Lista vacía | Diseño |
-| CSV-10 | Reabrir el repositorio | El próximo número de orden continúa la secuencia | Diseño |
-| CSV-11 | Sumar entradas por usuario y fecha | Excluye las `FALLIDA` | FAQ 27, S4 |
-| CSV-12 | Archivo con columnas faltantes | Error claro, sin datos corruptos | Diseño |
-| CSV-13 | Contrato: repositorio CSV y repositorio en memoria | Ambos pasan la misma suite | Diseño |
-| CSV-14 | Leer con archivo inexistente | Lista vacía, sin error | Diseño |
-| CSV-15 | Compra con tarjeta aprobada | Ningún dato de la tarjeta (número, código, vencimiento) aparece en los CSV ⚠️ | S15 |
+| BD-01 | Primer uso con una base inexistente | Crea el archivo y las tablas | Diseño |
+| BD-02 | Guardar y recuperar por número de orden | La compra recuperada es igual a la guardada | Diseño |
+| BD-03 | Guardar dos compras | Ninguna pisa a la otra | Diseño |
+| BD-04 | Guardar compra con 4 visitantes | Se recuperan los 4, en orden | Diseño |
+| BD-05 | Listar compras por usuario y fecha | Devuelve solo las que coinciden | FAQ 27 |
+| BD-06 | Buscar orden inexistente | Devuelve `None` | Diseño |
+| BD-07 | Actualizar estado de una compra | El cambio persiste al reabrir la base | CA4 |
+| BD-08 | Datos con acentos, ñ y comillas | Se guardan y leen sin alterarse | Diseño |
+| BD-09 | Base recién creada | Lista de compras vacía | Diseño |
+| BD-10 | Reabrir el repositorio | El próximo número de orden continúa la secuencia | Diseño |
+| BD-11 | Sumar entradas por usuario y fecha | Excluye las `FALLIDA` | FAQ 27, S4 |
+| BD-12 | Contrato: repositorio SQLite y repositorio en memoria | Ambos pasan la misma suite | Diseño |
+| BD-13 | Compra con tarjeta aprobada | Ningún dato de la tarjeta (número, código, vencimiento) aparece en la base ⚠️ | S15 |
+| BD-14 | Falla el guardado a mitad de camino | No queda una compra incompleta (transacción) | Diseño |
+| BD-15 | Dos conexiones abiertas sobre la misma base piden número de orden | Obtienen números distintos | Diseño |
 
 ### 4.2 Pasarela de pago simulada (`PSM`)
 
@@ -355,8 +357,8 @@ Reemplaza a la integración real con Mercado Pago (la FAQ 4 autoriza simularla).
 | SRV-06 | Pago pendiente | Sin cambios y sin mail | CA4 |
 | SRV-07 | Se procesa dos veces el mismo pago (doble clic o recarga) | Idempotente: un solo mail y un solo cambio de estado | Diseño |
 | SRV-08 | Cancelar el pago desde la pasarela | Compra `FALLIDA` y cupo liberado ⚠️ | S13 |
-| SRV-09 | Con CSV real: dos compras de 5 y una de 1 | Las dos primeras pasan, la tercera se rechaza | FAQ 27 |
-| SRV-10 | Validación fallida | El CSV queda sin cambios | CA1 |
+| SRV-09 | Con base SQLite real: dos compras de 5 y una de 1 | Las dos primeras pasan, la tercera se rechaza | FAQ 27 |
+| SRV-10 | Validación fallida | La base queda sin cambios | CA1 |
 | SRV-11 | Compra `FALLIDA` previa de 10 entradas | Se puede volver a comprar 10 ⚠️ | S4 |
 | SRV-12 | Falla el envío del mail | La compra se mantiene y se informa aviso ⚠️ | S10 |
 | SRV-13 | Tarjeta con total $0 | `PAGADA`, mail enviado, sin crear sesión de pago ⚠️ | S8 |
@@ -393,7 +395,7 @@ Reemplaza a la integración real con Mercado Pago (la FAQ 4 autoriza simularla).
 
 ## 5. Pruebas de sistema (35)
 
-Se ejecutan con un navegador automatizado (Playwright), la app levantada con la pasarela simulada y el mail falso, CSV temporal y reloj fijo.
+Se ejecutan con un navegador automatizado (Playwright), la app levantada con la pasarela simulada y el mail falso, base SQLite temporal y reloj fijo.
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
@@ -419,7 +421,7 @@ Se ejecutan con un navegador automatizado (Playwright), la app levantada con la 
 | SIS-20 | Viewport 1280×800 (escritorio) | Layout correcto | FAQ 24 |
 | SIS-21 | Estilos de la app | Fuente Lato y paleta del PO aplicadas | FAQ 3 |
 | SIS-22 | Doble clic en "Confirmar" | Se crea una sola compra | Diseño |
-| SIS-23 | Reiniciar el servidor tras una compra | La compra sigue en el CSV y cuenta para el límite | Diseño |
+| SIS-23 | Reiniciar el servidor tras una compra | La compra sigue en la base y cuenta para el límite | Diseño |
 | SIS-24 | Errores de validación del formulario | Se muestran junto al campo correspondiente | Usabilidad |
 | SIS-25 | Formulario | Campos con etiquetas y navegación completa por teclado | Usabilidad |
 | SIS-26 | `manual`: comparar la pasarela simulada con la de Mercado Pago real | Encabezado amarillo, botón azul "Pagar y finalizar", resumen de compra y disposición similares | Diseño |
@@ -461,7 +463,7 @@ De menor a mayor complejidad, empezando por el dominio puro:
 4. `PAG`, `ORD`, `USR`: estados, orden y mensaje final.
 5. `MAI`: armado del contenido del mail.
 6. `TAR`: validación de la tarjeta (unitarias).
-7. `CSV`: persistencia real.
+7. `BD`: persistencia real en SQLite.
 8. `PSM` y `MAIL`: pasarela simulada y notificador de mail (falso primero, SMTP real después).
 9. `SRV`: orquestación de todo el flujo.
 10. `API`: capa Flask, incluidas las rutas de la pasarela.
