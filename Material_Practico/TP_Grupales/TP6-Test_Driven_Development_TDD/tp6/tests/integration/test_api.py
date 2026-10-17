@@ -85,11 +85,12 @@ def test_api_01_inicio_muestra_el_formulario_de_compra(cliente):
     assert "Comprar entradas" in respuesta.get_data(as_text=True)
 
 
-def test_api_02_dias_no_disponibles(cliente):
-    respuesta = cliente.get("/api/dias-no-disponibles")
-    assert respuesta.get_json()["dias"] == [
+def test_api_02_dias_no_disponibles_y_rango_de_compra(cliente):
+    datos = cliente.get("/api/dias-no-disponibles").get_json()
+    assert datos["dias"] == [
         "2026-10-19", "2026-10-26", "2026-11-02", "2026-11-09",
     ]
+    assert (datos["desde"], datos["hasta"]) == ("2026-10-14", "2026-11-14")
 
 
 def test_api_03_precios_y_reglas_de_descuento(cliente):

@@ -370,7 +370,7 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
 | API-01 | `GET /` | 200 con el formulario de compra | CA1 |
-| API-02 | `GET /api/dias-no-disponibles` | JSON con lunes y feriados del rango | FAQ 2 |
+| API-02 | `GET /api/dias-no-disponibles` | JSON con lunes y feriados del rango, y las fechas `desde` y `hasta` en que se puede comprar | FAQ 2, FAQ 25 |
 | API-03 | `GET /api/precios` | JSON con precios y reglas de descuento | FAQ 6, 7 |
 | API-04 | `POST /api/compras` en efectivo | 201 con número de orden, cantidad y fecha | CA8 |
 | API-05 | `POST /api/compras` con tarjeta | 201 con `url_pago` hacia `/pasarela/<token>` | CA4 |
