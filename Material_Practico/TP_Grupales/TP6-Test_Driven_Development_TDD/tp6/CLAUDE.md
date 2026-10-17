@@ -54,7 +54,7 @@ Para avanzar más rápido se trabaja **por grupos de casos** (decisión D20): un
 
 ## 4. Arquitectura
 
-Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Tests en `tests/unit/` y, más adelante, `tests/integration/` y `tests/system/`.
+Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Adaptadores en `src/ecoharmony/persistencia/` (`RepositorioSQLite`). Tests en `tests/unit/`, `tests/integration/` y, más adelante, `tests/system/`.
 
 | Módulo | Contenido |
 | --- | --- |
@@ -87,15 +87,14 @@ Convenciones de diseño:
 
 ## 6. Estado y próximos pasos
 
-**Hecho** (170 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR`.
+**Hecho** (192 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR` y `BD`.
 
 **Pendiente**, en este orden (ver sección 7 de `docs/Casos_de_Prueba.md`):
 
-1. `BD`: repositorio SQLite que cumpla el contrato de `RepositorioEnMemoria`.
-2. `PSM`: pasarela simulada (`pasarela.py`) y `MAIL`: notificador de mail simulado.
-3. `SRV`: servicio que orquesta todo el flujo.
-4. `API`: capa Flask, incluidas las rutas de la pasarela.
-5. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
+1. `PSM`: pasarela simulada (`pasarela.py`) y `MAIL`: notificador de mail simulado.
+2. `SRV`: servicio que orquesta todo el flujo.
+3. `API`: capa Flask, incluidas las rutas de la pasarela.
+4. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
 
 ## 7. Cómo colaborar con el equipo
 

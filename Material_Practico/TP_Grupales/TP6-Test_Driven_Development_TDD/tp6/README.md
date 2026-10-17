@@ -163,6 +163,7 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 | `CAN` | Cantidad y límite de 10 | Hecho |
 | `PAG`, `ORD`, `USR`, `MAI` | Estados, orden, sesión y mail | Hecho |
 | `TAR` | Validación de tarjeta | Hecho |
-| Integración y sistema | Base SQLite, pasarela simulada, mail simulado, API, navegador | Pendiente |
+| `BD` | Base de datos SQLite | Hecho |
+| Integración y sistema | Pasarela simulada, mail simulado, servicio, API, navegador | Pendiente |
 
 Actualizar esta tabla al cerrar cada grupo.
