@@ -162,7 +162,7 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 | `DIA`, `FEC` | Calendario y reloj | Hecho |
 | `CAN` | Cantidad y límite de 10 | Hecho |
 | `PAG`, `ORD`, `USR`, `MAI` | Estados, orden, sesión y mail | Hecho |
-| `TAR` | Validación de tarjeta | Pendiente |
+| `TAR` | Validación de tarjeta | Hecho |
 | Integración y sistema | CSV, pasarela simulada, mail, API, navegador | Pendiente |
 
 Actualizar esta tabla al cerrar cada grupo.

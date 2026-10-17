@@ -63,6 +63,7 @@ Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin CSV, sin internet). Te
 | `calendario.py`, `fechas.py`, `reloj.py` | Días de apertura, fechas disponibles y hora local |
 | `pagos.py` | Formas de pago, estados de la compra y transiciones |
 | `compras.py` | `Compra`, `crear_compra`, límite de 10, mensaje final |
+| `tarjetas.py` | Validación de tarjeta y `TarjetaValidada` (solo marca, últimos 4 y titular) |
 | `repositorio.py` | `RepositorioEnMemoria` (define el contrato del repositorio CSV) |
 | `usuarios.py`, `mails.py`, `formatos.py`, `errores.py` | Usuario mock, armado del mail, formatos, errores |
 
@@ -85,16 +86,15 @@ Convenciones de diseño:
 
 ## 6. Estado y próximos pasos
 
-**Hecho** (127 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`.
+**Hecho** (170 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR`.
 
 **Pendiente**, en este orden (ver sección 7 de `docs/Casos_de_Prueba.md`):
 
-1. `TAR`: validación de tarjeta (`tarjetas.py`).
-2. `CSV`: repositorio CSV que cumpla el contrato de `RepositorioEnMemoria`.
-3. `PSM`: pasarela simulada (`pasarela.py`) y `MAIL`: notificador SMTP y falso.
-4. `SRV`: servicio que orquesta todo el flujo.
-5. `API`: capa Flask, incluidas las rutas de la pasarela.
-6. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
+1. `CSV`: repositorio CSV que cumpla el contrato de `RepositorioEnMemoria`.
+2. `PSM`: pasarela simulada (`pasarela.py`) y `MAIL`: notificador SMTP y falso.
+3. `SRV`: servicio que orquesta todo el flujo.
+4. `API`: capa Flask, incluidas las rutas de la pasarela.
+5. `SIS`: frontend responsive, pantalla de la pasarela y pruebas end-to-end con Playwright.
 
 ## 7. Cómo colaborar con el equipo
 
