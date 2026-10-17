@@ -8,7 +8,7 @@ Implementación de la user story **"Comprar entradas"** aplicando Desarrollo Con
 
 ## 1. Qué se construye
 
-Una aplicación web responsive (backend en Python, persistencia en CSV) donde un visitante compra entradas al parque indicando fecha, cantidad, edad de cada visitante, tipo de pase y forma de pago (efectivo o tarjeta con Mercado Pago). Al confirmar, recibe un mail de confirmación.
+Una aplicación web responsive (backend en Python, persistencia en CSV) donde un visitante compra entradas al parque indicando fecha, cantidad, edad de cada visitante, tipo de pase y forma de pago (efectivo, o tarjeta mediante una **pasarela de pago simulada** con el aspecto de Mercado Pago). Al confirmar, recibe un mail de confirmación.
 
 Las reglas de negocio salen de tres fuentes, que deben tener a mano:
 
@@ -68,7 +68,7 @@ tp6/
 └── requirements.txt
 ```
 
-A medida que avance el trabajo se suman las carpetas de integración, sistema, adaptadores (CSV, Mercado Pago, mail), la capa web y el frontend.
+A medida que avance el trabajo se suman las carpetas de integración, sistema, adaptadores (CSV, pasarela simulada, mail), la capa web y el frontend.
 
 ---
 
@@ -107,7 +107,7 @@ Un test que pasa de entrada (porque el código ya generaliza) se commitea como `
 - **PEP8**, líneas de hasta 79 caracteres.
 - Nombres de dominio en español (`Visitante`, `Entrada`, `calcular_precio`).
 - Tests con nombres descriptivos y, cuando se pueda, parametrizados con `pytest.param(..., id="PRE-05")` para que el ID del caso figure en el reporte.
-- El **dominio es puro**: sin Flask, sin CSV, sin llamadas a internet. Las dependencias externas (repositorio CSV, Mercado Pago, mail, reloj) se acceden a través de interfaces, con un adaptador real y uno falso para los tests.
+- El **dominio es puro**: sin Flask, sin CSV, sin llamadas a internet. Las dependencias externas (repositorio CSV, pasarela de pago, mail, reloj) se acceden a través de interfaces, con un adaptador real y uno falso para los tests.
 - La hora actual se inyecta, no se lee dentro de las reglas.
 - Los montos son enteros en pesos.
 
@@ -119,6 +119,7 @@ Un test que pasa de entrada (porque el código ya generaliza) se commitea como `
 | --- | --- |
 | `docs/Casos_de_Prueba.md` | Lista de casos de prueba (unitarias, integración, sistema), su origen y los supuestos pendientes. **Respalda los tests: si un test cambia, se actualiza este archivo.** |
 | `docs/Decisiones_de_Diseno.md` | Decisiones de diseño y su motivo. Se completa con cada ciclo relevante. |
+| `docs/Pasarela_Simulada.md` | Diseño del flujo y de las pantallas de la pasarela de pago simulada. |
 | Consigna, FAQs, US y descripción del dominio | Fuente de las reglas de negocio. |
 
 ---
@@ -134,7 +135,7 @@ Mientras los docentes no respondan, se trabaja con los supuestos S1 a S10 de `do
 - S5: el mail de esta US no lleva QR.
 - S6: edad máxima válida de 120 años.
 - S7: se puede comprar para hoy antes de la apertura, hasta las 17:30.
-- S8: una compra de $0 no pasa por Mercado Pago.
+- S8: una compra de $0 no pasa por la pasarela de pago.
 - S9: el mail se envía al confirmar la compra.
 - S10: si falla el mail, la compra se mantiene.
 
@@ -161,6 +162,7 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 | `DIA`, `FEC` | Calendario y reloj | Hecho |
 | `CAN` | Cantidad y límite de 10 | Hecho |
 | `PAG`, `ORD`, `USR`, `MAI` | Estados, orden, sesión y mail | Hecho |
-| Integración y sistema | CSV, Mercado Pago, mail, API, navegador | Pendiente |
+| `TAR` | Validación de tarjeta | Pendiente |
+| Integración y sistema | CSV, pasarela simulada, mail, API, navegador | Pendiente |
 
 Actualizar esta tabla al cerrar cada grupo.

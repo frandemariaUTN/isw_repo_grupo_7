@@ -12,8 +12,8 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 
 | Nivel | Prefijos | Qué prueba | Dependencias |
 | --- | --- | --- | --- |
-| Unitaria | `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI` | Reglas de dominio puras | Ninguna (reloj inyectado) |
-| Integración | `CSV`, `MP`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí | CSV temporal, pasarela y mail falsos, Flask test client |
+| Unitaria | `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR` | Reglas de dominio puras | Ninguna (reloj inyectado) |
+| Integración | `CSV`, `PSM`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí | CSV temporal, pasarela simulada y mail falso, Flask test client |
 | Sistema | `SIS` | Flujo completo desde el navegador | App levantada con fakes, CSV temporal, reloj fijo |
 
 **Reloj de referencia para los tests:** "hoy" = **miércoles 14/10/2026, 10:00** (hora de Argentina), salvo que el caso indique otra cosa.
@@ -34,6 +34,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 - `FAQ n`: pregunta n del documento de FAQs.
 - `DOM`: descripción del dominio.
 - `S1` a `S10`: **supuesto pendiente de confirmar con el PO** (ver sección 2). Se marcan con ⚠️.
+- `S11` a `S15`: **decisión del grupo** sobre la pasarela de pago simulada (ver sección 2).
 
 **Estados de una compra:** `PENDIENTE_BOLETERIA`, `PENDIENTE_PAGO_ONLINE`, `PAGADA`, `FALLIDA`.
 
@@ -53,10 +54,11 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `test_usuarios.py` | USR-01 |
 | `test_compras.py` | ORD-01 a ORD-09, USR-02, USR-03, PAG-06, PAG-07, PAG-13, CAN-08 y CAN-10 a CAN-18 |
 | `test_mails.py` | MAI-01 a MAI-10 |
+| `test_tarjetas.py` | TAR-01 a TAR-25 |
 
 **Estilo:** PEP8, tests con nombres descriptivos en español (`test_<regla>_<condicion>_<resultado>`), un `assert` conceptual por test, parametrización con `pytest.mark.parametrize` para casos similares.
 
-**Pruebas manuales / opcionales:** marcadas con `@pytest.mark.mp_sandbox`, `@pytest.mark.smtp_real` o `manual`. Quedan excluidas de la corrida por defecto.
+**Pruebas manuales / opcionales:** marcadas con `@pytest.mark.smtp_real` o `@pytest.mark.manual`. Quedan excluidas de la corrida por defecto.
 
 ---
 
@@ -71,13 +73,18 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | S5 | El mail de esta US **no lleva QR** (FAQ 18 lo pide solo para actividades) | ¿Lleva QR? |
 | S6 | Edad máxima válida: **120 años** | ¿Cuál es la edad máxima razonable? |
 | S7 | Se puede comprar para hoy **antes de la apertura** (8:30), siempre que sea hasta las 17:30 | ¿Hay un horario mínimo de compra? |
-| S8 | Compra con tarjeta de **total $0** (todos ≤ 3 años): no pasa por Mercado Pago, queda `PAGADA` | ¿Cómo se trata una compra sin costo? |
+| S8 | Compra con tarjeta de **total $0** (todos ≤ 3 años): no pasa por la pasarela de pago, queda `PAGADA` | ¿Cómo se trata una compra sin costo? |
 | S9 | El mail se envía al **confirmar** la compra: en efectivo al crearla, con tarjeta al aprobarse el pago | ¿Cuándo debe llegar el mail? |
 | S10 | Si el envío del mail falla, **la compra se mantiene** y se informa un aviso | ¿Qué hacer si falla el mail? |
+| S11 | La pasarela simulada se abre en **la misma pestaña** (redirección) y vuelve a la app al terminar | Decisión del grupo |
+| S12 | El resultado del pago se elige con el **nombre del titular**, como en las tarjetas de prueba de Mercado Pago: `APRO` aprueba, `OTHE`, `FUND`, `SECU` y `EXPI` rechazan, `CONT` queda pendiente. Cualquier otro titular con tarjeta válida **se aprueba** | Decisión del grupo |
+| S13 | En la pasarela **no se reintenta** tras un rechazo ni tras cancelar: la compra pasa a `FALLIDA` y se vuelve a la app (extiende S4) | Decisión del grupo |
+| S14 | La sesión de pago **no vence por tiempo** | Decisión del grupo |
+| S15 | Los datos de la tarjeta **nunca se guardan** (ni en CSV ni en logs): tras validar solo se conservan marca y últimos 4 dígitos | Decisión del grupo (seguridad) |
 
 ---
 
-## 3. Pruebas unitarias (112)
+## 3. Pruebas unitarias (137)
 
 ### 3.1 Precios y descuentos (`PRE`)
 
@@ -241,9 +248,41 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | MAI-09 | Montos | Formato "$10.000" | Diseño |
 | MAI-10 | Visitante gratuito | Figura con subtotal $0 | FAQ 7 |
 
+### 3.11 Tarjeta de crédito o débito (`TAR`)
+
+Datos de prueba: Mastercard `5031 7557 3453 0604`, Visa `4509 9535 6623 3704`, código de seguridad `123`, vencimiento `11/30`, DNI `12345678` (tarjetas de prueba de Mercado Pago). Con el reloj de referencia ("hoy" = 14/10/2026) para los vencimientos.
+
+| ID | Caso | Resultado esperado | Origen |
+| --- | --- | --- | --- |
+| TAR-01 | Número Mastercard de prueba `5031 7557 3453 0604` | Válido | CA4 |
+| TAR-02 | Número Visa de prueba `4509 9535 6623 3704` | Válido | CA4 |
+| TAR-03 | Número con espacios y guiones (`5031-7557-3453-0604`) | Se normaliza a 16 dígitos | CA4 |
+| TAR-04 | Número vacío o `None` | Rechazado: es obligatorio | CA4 |
+| TAR-05 | Número con letras | Rechazado | CA4 |
+| TAR-06 | Número que no cumple el algoritmo de Luhn (`...0605`) | Rechazado | CA4 |
+| TAR-07 | Número de 12 dígitos | Rechazado: demasiado corto | CA4 |
+| TAR-08 | Número de 20 dígitos | Rechazado: demasiado largo | CA4 |
+| TAR-09 | Marca de un número que empieza con 4 | `Visa` | CA4 |
+| TAR-10 | Marca de un número que empieza con 5 | `Mastercard` | CA4 |
+| TAR-11 | Marca de un número con otro inicio | `Tarjeta` (genérica) | CA4 |
+| TAR-12 | Vencimiento `11/30` | Válido | CA4 |
+| TAR-13 | Vencimiento `10/26` (mes actual) | Válido: vence a fin de mes | CA4 |
+| TAR-14 | Vencimiento `09/26` | Rechazado: tarjeta vencida | CA4 |
+| TAR-15 | Vencimiento `13/30` o `00/30` | Rechazado: mes inválido | CA4 |
+| TAR-16 | Vencimiento con formato inválido (`1130`, `11/2030`, `ab/cd`, vacío) | Rechazado | CA4 |
+| TAR-17 | Código de seguridad `123` | Válido | CA4 |
+| TAR-18 | Código de seguridad inválido (`12`, `1234`, `abc`, vacío) | Rechazado | CA4 |
+| TAR-19 | Titular `APRO` y `Facundo Pérez` | Válidos | CA4 |
+| TAR-20 | Titular vacío | Rechazado | CA4 |
+| TAR-21 | Titular con números (`Juan 3`) | Rechazado | CA4 |
+| TAR-22 | DNI del titular `12345678` y `1234567` | Válidos | FAQ 32 |
+| TAR-23 | DNI inválido (`123`, `abc`, `123456789`, vacío) | Rechazado: solo DNI de 7 u 8 dígitos | FAQ 32 |
+| TAR-24 | Tarjeta con varios datos inválidos a la vez | Se informan **todos** los errores juntos | CA4 |
+| TAR-25 | Tarjeta válida | Conserva solo marca, últimos 4 dígitos y titular (nunca el número completo ni el código de seguridad) ⚠️ | S15 |
+
 ---
 
-## 4. Pruebas de integración (64)
+## 4. Pruebas de integración (78)
 
 ### 4.1 Repositorio CSV (`CSV`)
 
@@ -263,25 +302,33 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | CSV-12 | Archivo con columnas faltantes | Error claro, sin datos corruptos | Diseño |
 | CSV-13 | Contrato: repositorio CSV y repositorio en memoria | Ambos pasan la misma suite | Diseño |
 | CSV-14 | Leer con archivo inexistente | Lista vacía, sin error | Diseño |
+| CSV-15 | Compra con tarjeta aprobada | Ningún dato de la tarjeta (número, código, vencimiento) aparece en los CSV ⚠️ | S15 |
 
-### 4.2 Pasarela Mercado Pago (`MP`)
+### 4.2 Pasarela de pago simulada (`PSM`)
+
+Reemplaza a la integración real con Mercado Pago (la FAQ 4 autoriza simularla). La pasarela es una página propia, con el aspecto de la de Mercado Pago, a la que se llega **después de validar toda la compra**. El resultado se elige con el nombre del titular (S12). Diseño completo en `docs/Pasarela_Simulada.md`.
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| MP-01 | Pasarela falsa: crear preferencia | Devuelve un `init_point` | CA4, FAQ 4 |
-| MP-02 | Armado de ítems | Un ítem por visitante con precio ya descontado; los gratuitos se omiten | FAQ 7 |
-| MP-03 | Preferencia | `external_reference` igual al número de orden | CA4 |
-| MP-04 | Preferencia | `back_urls` de success, failure y pending configuradas | CA4 |
-| MP-05 | Adaptador real con SDK simulado | Arma el payload correcto | CA4 |
-| MP-06 | Adaptador real: error HTTP de la API | Lanza `PasarelaError` | CA4 |
-| MP-07 | Adaptador real sin credenciales | Lanza `ConfiguracionError` con mensaje claro | Diseño |
-| MP-08 | Consultar pago con estado `approved` | Resultado `APROBADO` | CA4 |
-| MP-09 | Consultar pago con estado `rejected` | Resultado `RECHAZADO` | CA4 |
-| MP-10 | Consultar pago con estado `pending` o `in_process` | Resultado `PENDIENTE` | CA4 |
-| MP-11 | Consultar `payment_id` inexistente | Error controlado | CA4 |
-| MP-12 | El `external_reference` del pago no coincide con la orden | Se rechaza la confirmación | Seguridad |
-| MP-13 | Preferencia | Moneda ARS | FAQ 6 |
-| MP-14 | `@pytest.mark.mp_sandbox`: crear preferencia real con cuenta de prueba | `init_point` HTTPS válido | CA4 |
+| PSM-01 | Crear sesión de pago para una compra con tarjeta | Sesión `ABIERTA` con un token | CA4, FAQ 4 |
+| PSM-02 | Sesión creada | Guarda el número de orden y el monto de la compra | CA4 |
+| PSM-03 | Dos sesiones distintas | Tokens distintos e impredecibles (al menos 32 caracteres) | Seguridad |
+| PSM-04 | Buscar un token inexistente | Devuelve `None` | CA4 |
+| PSM-05 | Pagar con titular `APRO` y tarjeta válida | `APROBADO`, sesión `CERRADA` y número de operación | CA4, S12 ⚠️ |
+| PSM-06 | Pagar con otro titular válido (`Facundo Pérez`) | `APROBADO` | S12 ⚠️ |
+| PSM-07 | Titular `OTHE` | `RECHAZADO` por error general | S12 ⚠️ |
+| PSM-08 | Titular `FUND` | `RECHAZADO` por fondos insuficientes | S12 ⚠️ |
+| PSM-09 | Titular `SECU` | `RECHAZADO` por código de seguridad inválido | S12 ⚠️ |
+| PSM-10 | Titular `EXPI` | `RECHAZADO` por problema con la fecha de vencimiento | S12 ⚠️ |
+| PSM-11 | Titular `CONT` | `PENDIENTE` | S12 ⚠️ |
+| PSM-12 | Datos de tarjeta inválidos | Errores de validación y la sesión sigue `ABIERTA` (se puede corregir) | CA4 |
+| PSM-13 | Pagar una sesión ya cerrada | Error y no cambia el resultado anterior | Diseño |
+| PSM-14 | Cancelar una sesión abierta | Sesión `CANCELADA` | S13 ⚠️ |
+| PSM-15 | Pagar una sesión cancelada | Error | S13 ⚠️ |
+| PSM-16 | Cancelar una sesión ya cerrada | Error y no cambia el resultado | Diseño |
+| PSM-17 | Dos pagos aprobados | Números de operación distintos | Diseño |
+| PSM-18 | Crear sesión con monto $0 | Error: no hay nada que cobrar | S8 ⚠️ |
+| PSM-19 | Después de pagar | La sesión no conserva número de tarjeta ni código de seguridad | S15 ⚠️ |
 
 ### 4.3 Notificador de mail (`MAIL`)
 
@@ -300,18 +347,20 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| SRV-01 | Compra en efectivo válida | Guarda `PENDIENTE_BOLETERIA` y envía mail ⚠️ | S3, S9 |
-| SRV-02 | Compra con tarjeta válida | Guarda `PENDIENTE_PAGO_ONLINE`, devuelve URL de pago, aún sin mail ⚠️ | CA4, S9 |
-| SRV-03 | Retorno de pago aprobado | Orden `PAGADA` y mail enviado | CA3, CA4 |
-| SRV-04 | Retorno de pago rechazado | Orden `FALLIDA`, sin mail ⚠️ | S4 |
-| SRV-05 | Retorno de pago pendiente | Sin cambios y sin mail | CA4 |
-| SRV-06 | Retorno aprobado repetido (doble callback) | Idempotente: un solo mail | Diseño |
-| SRV-07 | Con CSV real: dos compras de 5 y una de 1 | Las dos primeras pasan, la tercera se rechaza | FAQ 27 |
-| SRV-08 | Validación fallida | El CSV queda sin cambios | CA1 |
-| SRV-09 | Compra `FALLIDA` previa de 10 entradas | Se puede volver a comprar 10 ⚠️ | S4 |
-| SRV-10 | Falla el envío del mail | La compra se mantiene y se informa aviso ⚠️ | S10 |
-| SRV-11 | Falla la pasarela al crear la preferencia | No queda orden pendiente y se devuelve error claro | CA4 |
-| SRV-12 | Tarjeta con total $0 | `PAGADA`, mail enviado, sin llamar a la pasarela ⚠️ | S8 |
+| SRV-01 | Compra en efectivo válida | Guarda `PENDIENTE_BOLETERIA` y envía mail, sin pasar por la pasarela ⚠️ | S3, S9 |
+| SRV-02 | Compra con tarjeta válida | Guarda `PENDIENTE_PAGO_ONLINE`, crea la sesión de pago y devuelve la URL de la pasarela; aún sin mail ⚠️ | CA4, S9 |
+| SRV-03 | Compra con tarjeta y datos inválidos (sin fecha, 11 entradas, etc.) | No crea compra ni sesión: todo se valida **antes** de ir a la pasarela | CA1, CA4 |
+| SRV-04 | Pago aprobado en la pasarela | Compra `PAGADA` y mail enviado | CA3, CA4 |
+| SRV-05 | Pago rechazado | Compra `FALLIDA`, sin mail ⚠️ | S4, S13 |
+| SRV-06 | Pago pendiente | Sin cambios y sin mail | CA4 |
+| SRV-07 | Se procesa dos veces el mismo pago (doble clic o recarga) | Idempotente: un solo mail y un solo cambio de estado | Diseño |
+| SRV-08 | Cancelar el pago desde la pasarela | Compra `FALLIDA` y cupo liberado ⚠️ | S13 |
+| SRV-09 | Con CSV real: dos compras de 5 y una de 1 | Las dos primeras pasan, la tercera se rechaza | FAQ 27 |
+| SRV-10 | Validación fallida | El CSV queda sin cambios | CA1 |
+| SRV-11 | Compra `FALLIDA` previa de 10 entradas | Se puede volver a comprar 10 ⚠️ | S4 |
+| SRV-12 | Falla el envío del mail | La compra se mantiene y se informa aviso ⚠️ | S10 |
+| SRV-13 | Tarjeta con total $0 | `PAGADA`, mail enviado, sin crear sesión de pago ⚠️ | S8 |
+| SRV-14 | Pago aprobado | El resultado incluye el mensaje final con cantidad y fecha | CA8 |
 
 ### 4.5 API web con Flask (`API`)
 
@@ -321,33 +370,39 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | API-02 | `GET /api/dias-no-disponibles` | JSON con lunes y feriados del rango | FAQ 2 |
 | API-03 | `GET /api/precios` | JSON con precios y reglas de descuento | FAQ 6, 7 |
 | API-04 | `POST /api/compras` en efectivo | 201 con número de orden, cantidad y fecha | CA8 |
-| API-05 | `POST /api/compras` con tarjeta | 201 con `url_pago` | CA4 |
+| API-05 | `POST /api/compras` con tarjeta | 201 con `url_pago` hacia `/pasarela/<token>` | CA4 |
 | API-06 | `POST` sin forma de pago | 400 con mensaje | CA6 |
 | API-07 | `POST` con fecha de un lunes | 400 con mensaje | CA5 |
 | API-08 | `POST` con 11 entradas | 400 con mensaje | CA7 |
 | API-09 | `POST` con un visitante sin edad | 400 que identifica al visitante | CA1 |
 | API-10 | `POST` con JSON inválido | 400 | Diseño |
 | API-11 | Cualquier error de validación | Formato consistente `{"errores": [{"campo", "mensaje"}]}` | Diseño |
-| API-12 | `GET /pago/retorno?status=approved&payment_id=...` | Pantalla de resultado y orden `PAGADA` | CA4 |
-| API-13 | Retorno con `payment_id` inexistente | Pantalla de error controlada | CA4 |
-| API-14 | `GET /api/compras/<id>/estado` | Devuelve el estado actual | CA4 |
-| API-15 | Estado de una orden inexistente | 404 | Diseño |
-| API-16 | Cualquier petición | Usa el usuario de la sesión mockeada | FAQ 19 |
+| API-12 | `GET /pasarela/<token>` | 200 con el resumen (cantidad de entradas y total) y el formulario de tarjeta | CA4 |
+| API-13 | `GET /pasarela/<token>` inexistente | 404 con página de error | CA4 |
+| API-14 | `POST /pasarela/<token>/pagar` con titular `APRO` | Redirige a `/compras/<n>/resultado` y la compra queda `PAGADA` | CA4 |
+| API-15 | `POST /pasarela/<token>/pagar` con tarjeta inválida | 400 con errores por campo y la sesión sigue abierta | CA4 |
+| API-16 | `POST /pasarela/<token>/pagar` con titular `OTHE` | Redirige al resultado con rechazo y la compra queda `FALLIDA` | S12, S13 |
+| API-17 | `POST /pasarela/<token>/cancelar` | Redirige a la app y la compra queda `FALLIDA` | S13 |
+| API-18 | `POST /pasarela/<token>/pagar` sobre una sesión ya cerrada | Redirige al resultado sin reprocesar | Diseño |
+| API-19 | `GET /compras/<n>/resultado` de una compra aprobada | Mensaje de éxito con cantidad de entradas y fecha | CA8 |
+| API-20 | `GET /compras/<n>/resultado` de una compra rechazada o pendiente | Mensaje de rechazo con el motivo, o de pago pendiente | CA4 |
+| API-21 | `GET /compras/<n>/resultado` de una compra de otro usuario o inexistente | 404 | CA9 |
+| API-22 | Cualquier petición | Usa el usuario de la sesión mockeada | FAQ 19 |
 
 ---
 
-## 5. Pruebas de sistema (26)
+## 5. Pruebas de sistema (35)
 
-Se ejecutan con un navegador automatizado (Playwright), la app levantada con pasarela y mail falsos, CSV temporal y reloj fijo.
+Se ejecutan con un navegador automatizado (Playwright), la app levantada con la pasarela simulada y el mail falso, CSV temporal y reloj fijo.
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| SIS-01 | **Prueba de usuario 1 de la US:** fecha válida, menos de 10 entradas, edades, pase, tarjeta por Mercado Pago | Pasa: pago simulado, mail enviado y pantalla final | US, CA3, CA4 |
-| SIS-02 | **Prueba de usuario 2:** confirmar sin forma de pago | Falla: error visible junto al campo | US, CA6 |
+| SIS-01 | **Prueba de usuario 1 de la US:** fecha válida, menos de 10 entradas, edades, pase y tarjeta. Se confirma, se pasa a la pasarela simulada, se ingresa la tarjeta de prueba (titular `APRO`) y se pulsa "Pagar y finalizar" | Pasa: vuelve a la app con mensaje de éxito (cantidad y fecha) y mail enviado | US, CA3, CA4 |
+| SIS-02 | **Prueba de usuario 2:** confirmar sin forma de pago | Falla: error visible junto al campo y no se redirige a la pasarela | US, CA6 |
 | SIS-03 | **Prueba de usuario 3:** intentar elegir un lunes | No se puede seleccionar (día deshabilitado) | US, CA5, FAQ 2 |
 | SIS-04 | **Prueba de usuario 4:** intentar cargar 11 entradas | Se bloquea el undécimo visitante o se muestra error | US, CA7 |
-| SIS-05 | Compra completa en efectivo | Pantalla final con instrucciones de boletería y mail enviado | CA6 |
-| SIS-06 | Pago rechazado en Mercado Pago | Mensaje claro, orden `FALLIDA`, sin mail | S4 |
+| SIS-05 | Compra completa en efectivo | No pasa por la pasarela: pantalla final con instrucciones de boletería y mail enviado | CA6 |
+| SIS-06 | Pago rechazado en la pasarela (titular `OTHE`) | Vuelve a la app con mensaje de rechazo, compra `FALLIDA` y sin mail | S12, S13 |
 | SIS-07 | Dos compras de 5 entradas para el mismo día, luego una tercera | La tercera se rechaza con mensaje | FAQ 27 |
 | SIS-08 | Calendario | Los lunes aparecen deshabilitados | FAQ 2 |
 | SIS-09 | Calendario cerca de fin de año | 25/12 y 01/01 deshabilitados | FAQ 1 |
@@ -356,18 +411,27 @@ Se ejecutan con un navegador automatizado (Playwright), la app levantada con pas
 | SIS-12 | Agregar y quitar visitantes | El total se recalcula en vivo | CA1 |
 | SIS-13 | Cambiar el pase de un visitante | El subtotal y el total se actualizan | CA1, FAQ 6 |
 | SIS-14 | Ingresar edades 2, 10 y 65 | Se ve el descuento aplicado en cada subtotal | FAQ 7 |
-| SIS-15 | Pago con tarjeta | Mercado Pago abre en pestaña nueva y la pestaña original se actualiza al resultado | CA4 |
-| SIS-16 | Pantalla final | Muestra cantidad de entradas y fecha de visita | CA8 |
+| SIS-15 | Confirmar con datos inválidos (sin forma de pago, fecha cerrada, 11 entradas) | **No se redirige** a la pasarela y se muestran los errores | CA1, CA4 |
+| SIS-16 | Pantalla final de una compra aprobada | Muestra cantidad de entradas y fecha de visita | CA8 |
 | SIS-17 | Falla el mail | La compra se completa y se muestra un aviso ⚠️ | S10 |
-| SIS-18 | Viewport 375×667 (celular) | Sin scroll horizontal y controles táctiles de al menos 44 px | FAQ 24 |
+| SIS-18 | Viewport 375×667 (celular) en el formulario | Sin scroll horizontal y controles táctiles de al menos 44 px | FAQ 24 |
 | SIS-19 | Viewport 768×1024 (tablet) | Layout correcto sin elementos cortados | FAQ 24 |
 | SIS-20 | Viewport 1280×800 (escritorio) | Layout correcto | FAQ 24 |
-| SIS-21 | Estilos | Fuente Lato y paleta del PO aplicadas | FAQ 3 |
+| SIS-21 | Estilos de la app | Fuente Lato y paleta del PO aplicadas | FAQ 3 |
 | SIS-22 | Doble clic en "Confirmar" | Se crea una sola compra | Diseño |
 | SIS-23 | Reiniciar el servidor tras una compra | La compra sigue en el CSV y cuenta para el límite | Diseño |
-| SIS-24 | Errores de validación | Se muestran junto al campo correspondiente | Usabilidad |
+| SIS-24 | Errores de validación del formulario | Se muestran junto al campo correspondiente | Usabilidad |
 | SIS-25 | Formulario | Campos con etiquetas y navegación completa por teclado | Usabilidad |
-| SIS-26 | `manual`: flujo completo con Mercado Pago sandbox y mail reales | Pago de prueba aprobado y mail recibido | CA3, CA4 |
+| SIS-26 | `manual`: comparar la pasarela simulada con la de Mercado Pago real | Encabezado amarillo, botón azul "Pagar y finalizar", resumen de compra y disposición similares | Diseño |
+| SIS-27 | Pantalla de la pasarela | Muestra cantidad de entradas y total iguales a los de la app, sin cupones, envío ni descuentos | CA4 |
+| SIS-28 | Formulario de tarjeta de la pasarela con número inválido, tarjeta vencida, código o DNI inválidos | Mensajes junto al campo y no se envía el pago | CA4 |
+| SIS-29 | Flecha "volver" de la pasarela | Vuelve a la app, compra `FALLIDA` y cupo liberado ⚠️ | S13 |
+| SIS-30 | Pasarela en 375×667 | Sin scroll horizontal y botón "Pagar y finalizar" siempre visible | FAQ 24 |
+| SIS-31 | Doble clic en "Pagar y finalizar" | Se procesa un solo pago | Diseño |
+| SIS-32 | Titular `CONT` | Vuelve a la app con mensaje de pago pendiente | S12 |
+| SIS-33 | Enlace de pasarela inexistente | Página de error | CA4 |
+| SIS-34 | Pagar y luego usar "atrás" del navegador | No se puede pagar de nuevo la sesión cerrada | Diseño |
+| SIS-35 | Pasarela frente a la app | Identidad visual propia (amarillo y azul, tipografía del sistema), distinta de la app (Lato y paleta del PO): se percibe como página externa | Diseño |
 
 ---
 
@@ -377,10 +441,10 @@ Se ejecutan con un navegador automatizado (Playwright), la app levantada con pas
 | --- | --- |
 | CA1 Fecha, cantidad, edad y pase | EDA, PAS, CAN-08/09, ORD-02, SIS-12/13 |
 | CA2 Fecha actual o futura | FEC-01 a FEC-07, SIS-10 |
-| CA3 Mail de confirmación | MAI, MAIL, SRV-01/03, SIS-01/05/26 |
-| CA4 Redirección a Mercado Pago | PAG-07 a PAG-10, MP, SRV-02 a SRV-06, API-05/12, SIS-01/15 |
+| CA3 Mail de confirmación | MAI, MAIL, SRV-01/04, SIS-01/05 |
+| CA4 Pago con tarjeta (pasarela simulada) | PAG-07 a PAG-10, TAR, PSM, SRV-02 a SRV-08, API-05 y API-12 a API-20, SIS-01, SIS-15 y SIS-27 a SIS-34 |
 | CA5 Parque abierto | DIA, FEC-10/15, API-07, SIS-03/08/09 |
-| CA6 Forma de pago | PAG-01 a PAG-05, API-06, SIS-02/05 |
+| CA6 Forma de pago | PAG-01 a PAG-05, API-06, SIS-02/05/15 |
 | CA7 Máximo 10 entradas | CAN, API-08, SIS-04/07 |
 | CA8 Informar cantidad y fecha | ORD-05 a ORD-07, API-04, SIS-16 |
 | CA9 Solo usuarios registrados | USR-01 a USR-03 |
@@ -396,11 +460,12 @@ De menor a mayor complejidad, empezando por el dominio puro:
 3. `CAN`: cantidad y límite acumulado (con repositorio en memoria).
 4. `PAG`, `ORD`, `USR`: estados, orden y mensaje final.
 5. `MAI`: armado del contenido del mail.
-6. `CSV`: persistencia real.
-7. `MP` y `MAIL`: adaptadores falsos primero, reales después.
-8. `SRV`: orquestación de todo el flujo.
-9. `API`: capa Flask.
-10. `SIS`: frontend responsive y pruebas end-to-end.
+6. `TAR`: validación de la tarjeta (unitarias).
+7. `CSV`: persistencia real.
+8. `PSM` y `MAIL`: pasarela simulada y notificador de mail (falso primero, SMTP real después).
+9. `SRV`: orquestación de todo el flujo.
+10. `API`: capa Flask, incluidas las rutas de la pasarela.
+11. `SIS`: frontend responsive, pasarela simulada y pruebas end-to-end.
 
 Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados cuentan como un caso con varias entradas.
 
@@ -410,7 +475,7 @@ Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados
 
 | Nivel | Casos |
 | --- | --- |
-| Unitarias | 112 |
-| Integración | 64 |
-| Sistema | 26 |
-| **Total** | **202** |
+| Unitarias | 137 |
+| Integración | 78 |
+| Sistema | 35 |
+| **Total** | **250** |
