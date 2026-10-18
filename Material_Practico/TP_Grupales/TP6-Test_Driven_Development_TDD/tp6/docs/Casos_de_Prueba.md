@@ -14,7 +14,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | --- | --- | --- | --- |
 | Unitaria | `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR` | Reglas de dominio puras | Ninguna (reloj inyectado) |
 | Integración | `BD`, `PSM`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí | Base SQLite temporal, pasarela simulada y mail simulado, Flask test client |
-| Sistema | `SIS` | Flujo completo desde el navegador | App levantada con fakes, base SQLite temporal, reloj fijo |
+| Sistema | `SIS` | Flujo completo desde el navegador | Edge con Playwright, app con datos en memoria y reloj fijo |
 
 **Reloj de referencia para los tests:** "hoy" = **miércoles 14/10/2026, 10:00** (hora de Argentina), salvo que el caso indique otra cosa.
 
@@ -38,7 +38,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 
 **Estados de una compra:** `PENDIENTE_BOLETERIA`, `PENDIENTE_PAGO_ONLINE`, `PAGADA`, `FALLIDA`.
 
-**Dónde están los tests** (`tests/unit/` y `tests/integration/`):
+**Dónde están los tests** (`tests/unit/`, `tests/integration/` y `tests/system/`):
 
 | Archivo | Casos |
 | --- | --- |
@@ -60,6 +60,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `integration/test_notificador.py` | MAIL-01 a MAIL-03 |
 | `integration/test_servicio_de_compra.py` | SRV-01 a SRV-14 |
 | `integration/test_api.py` | API-01 a API-22 |
+| `system/test_sistema.py` | SIS-01 a SIS-08 |
 
 **Estilo:** PEP8, tests con nombres descriptivos en español (`test_<regla>_<condicion>_<resultado>`), un `assert` conceptual por test, parametrización con `pytest.mark.parametrize` para casos similares.
 
@@ -394,47 +395,20 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 
 ---
 
-## 5. Pruebas de sistema (35)
+## 5. Pruebas de sistema (8)
 
-Se ejecutan con un navegador automatizado (Playwright), la app levantada con la pasarela simulada y el mail simulado, base SQLite temporal y reloj fijo.
+Se ejecutan con Playwright usando el **Microsoft Edge instalado** (no se descarga ningún navegador). La app se levanta en un hilo con datos en memoria, pasarela y mail simulados y reloj fijo ("hoy" = 14/10/2026 10:00), en una pantalla de celular (390×844). Se limitan a las pruebas de usuario de la US y a los flujos principales: el resto del comportamiento ya está cubierto por las pruebas unitarias y de integración.
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| SIS-01 | **Prueba de usuario 1 de la US:** fecha válida, menos de 10 entradas, edades, pase y tarjeta. Se confirma, se pasa a la pasarela simulada, se ingresa la tarjeta de prueba (titular `APRO`) y se pulsa "Pagar y finalizar" | Pasa: vuelve a la app con mensaje de éxito (cantidad y fecha) y mail enviado | US, CA3, CA4 |
+| SIS-01 | **Prueba de usuario 1 de la US:** fecha válida, menos de 10 entradas, edades, pase y tarjeta. Se confirma, se pasa a la pasarela simulada, se ingresa la tarjeta de prueba (titular `APRO`) y se pulsa "Pagar y finalizar" | Pasa: vuelve a la app con mensaje de éxito (cantidad y fecha) y el modal "Mail enviado a …" | US, CA3, CA4, CA8 |
 | SIS-02 | **Prueba de usuario 2:** confirmar sin forma de pago | Falla: error visible junto al campo y no se redirige a la pasarela | US, CA6 |
 | SIS-03 | **Prueba de usuario 3:** intentar elegir un lunes | No se puede seleccionar (día deshabilitado) | US, CA5, FAQ 2 |
-| SIS-04 | **Prueba de usuario 4:** intentar cargar 11 entradas | Se bloquea el undécimo visitante o se muestra error | US, CA7 |
-| SIS-05 | Compra completa en efectivo | No pasa por la pasarela: pantalla final con instrucciones de boletería y mail enviado | CA6 |
-| SIS-06 | Pago rechazado en la pasarela (titular `OTHE`) | Vuelve a la app con mensaje de rechazo, compra `FALLIDA` y sin mail | S12, S13 |
-| SIS-07 | Dos compras de 5 entradas para el mismo día, luego una tercera | La tercera se rechaza con mensaje | FAQ 27 |
-| SIS-08 | Calendario | Los lunes aparecen deshabilitados | FAQ 2 |
-| SIS-09 | Calendario cerca de fin de año | 25/12 y 01/01 deshabilitados | FAQ 1 |
-| SIS-10 | Calendario | Fechas pasadas y posteriores a hoy + 1 mes deshabilitadas | CA2, FAQ 25 |
-| SIS-11 | Reloj fijo en 17:45 | El día de hoy aparece deshabilitado | FAQ 26 |
-| SIS-12 | Agregar y quitar visitantes | El total se recalcula en vivo | CA1 |
-| SIS-13 | Cambiar el pase de un visitante | El subtotal y el total se actualizan | CA1, FAQ 6 |
-| SIS-14 | Ingresar edades 2, 10 y 65 | Se ve el descuento aplicado en cada subtotal | FAQ 7 |
-| SIS-15 | Confirmar con datos inválidos (sin forma de pago, fecha cerrada, 11 entradas) | **No se redirige** a la pasarela y se muestran los errores | CA1, CA4 |
-| SIS-16 | Pantalla final de una compra aprobada | Muestra cantidad de entradas y fecha de visita | CA8 |
-| SIS-17 | Compra confirmada | Se muestra el modal "Mail enviado a …" con el email del usuario, y se cierra con "Aceptar" | CA3, FAQ 5 |
-| SIS-18 | Viewport 375×667 (celular) en el formulario | Sin scroll horizontal y controles táctiles de al menos 44 px | FAQ 24 |
-| SIS-19 | Viewport 768×1024 (tablet) | Layout correcto sin elementos cortados | FAQ 24 |
-| SIS-20 | Viewport 1280×800 (escritorio) | Layout correcto | FAQ 24 |
-| SIS-21 | Estilos de la app | Fuente Lato y paleta del PO aplicadas | FAQ 3 |
-| SIS-22 | Doble clic en "Confirmar" | Se crea una sola compra | Diseño |
-| SIS-23 | Reiniciar el servidor tras una compra | La compra sigue en la base y cuenta para el límite | Diseño |
-| SIS-24 | Errores de validación del formulario | Se muestran junto al campo correspondiente | Usabilidad |
-| SIS-25 | Formulario | Campos con etiquetas y navegación completa por teclado | Usabilidad |
-| SIS-26 | `manual`: comparar la pasarela simulada con la de Mercado Pago real | Encabezado amarillo, botón azul "Pagar y finalizar", resumen de compra y disposición similares | Diseño |
-| SIS-27 | Pantalla de la pasarela | Muestra cantidad de entradas y total iguales a los de la app, sin cupones, envío ni descuentos | CA4 |
-| SIS-28 | Formulario de tarjeta de la pasarela con número inválido, tarjeta vencida, código o DNI inválidos | Mensajes junto al campo y no se envía el pago | CA4 |
-| SIS-29 | Flecha "volver" de la pasarela | Vuelve a la app, compra `FALLIDA` y cupo liberado ⚠️ | S13 |
-| SIS-30 | Pasarela en 375×667 | Sin scroll horizontal y botón "Pagar y finalizar" siempre visible | FAQ 24 |
-| SIS-31 | Doble clic en "Pagar y finalizar" | Se procesa un solo pago | Diseño |
-| SIS-32 | Titular `CONT` | Vuelve a la app con mensaje de pago pendiente | S12 |
-| SIS-33 | Enlace de pasarela inexistente | Página de error | CA4 |
-| SIS-34 | Pagar y luego usar "atrás" del navegador | No se puede pagar de nuevo la sesión cerrada | Diseño |
-| SIS-35 | Pasarela frente a la app | Identidad visual propia (amarillo y azul, tipografía del sistema), distinta de la app (Lato y paleta del PO): se percibe como página externa | Diseño |
+| SIS-04 | **Prueba de usuario 4:** intentar cargar 11 entradas | El botón para agregar se deshabilita al llegar a 10 y se muestra un aviso | US, CA7 |
+| SIS-05 | Compra completa en efectivo | No pasa por la pasarela: pantalla final con instrucciones de boletería y modal del mail | CA3, CA6 |
+| SIS-06 | Pago rechazado en la pasarela (titular `OTHE`) | Vuelve a la app con el mensaje de rechazo | S12, S13 |
+| SIS-07 | Ingresar edades 2, 10 y 65 | Cada subtotal muestra el descuento ($0, $5.000, $5.000) y el total se recalcula ($10.000) | CA1, FAQ 7 |
+| SIS-08 | Pantalla de celular chica (375×667) | Sin scroll horizontal y botones de al menos 44 px | FAQ 24 |
 
 ---
 
@@ -442,14 +416,14 @@ Se ejecutan con un navegador automatizado (Playwright), la app levantada con la 
 
 | Criterio de aceptación | Casos que lo cubren |
 | --- | --- |
-| CA1 Fecha, cantidad, edad y pase | EDA, PAS, CAN-08/09, ORD-02, SIS-12/13 |
-| CA2 Fecha actual o futura | FEC-01 a FEC-07, SIS-10 |
-| CA3 Mail de confirmación | MAI, MAIL, SRV-01/04/12, SIS-01/05/17 |
-| CA4 Pago con tarjeta (pasarela simulada) | PAG-07 a PAG-10, TAR, PSM, SRV-02 a SRV-08, API-05 y API-12 a API-20, SIS-01, SIS-15 y SIS-27 a SIS-34 |
-| CA5 Parque abierto | DIA, FEC-10/15, API-07, SIS-03/08/09 |
-| CA6 Forma de pago | PAG-01 a PAG-05, API-06, SIS-02/05/15 |
-| CA7 Máximo 10 entradas | CAN, API-08, SIS-04/07 |
-| CA8 Informar cantidad y fecha | ORD-05 a ORD-07, API-04, SIS-16 |
+| CA1 Fecha, cantidad, edad y pase | EDA, PAS, CAN-08/09, ORD-02, SIS-07 |
+| CA2 Fecha actual o futura | FEC-01 a FEC-07, API-02 |
+| CA3 Mail de confirmación | MAI, MAIL, SRV-01/04/12, SIS-01/05 |
+| CA4 Pago con tarjeta (pasarela simulada) | PAG-07 a PAG-10, TAR, PSM, SRV-02 a SRV-08, API-05 y API-12 a API-20, SIS-01 y SIS-06 |
+| CA5 Parque abierto | DIA, FEC-10/15, API-07, SIS-03 |
+| CA6 Forma de pago | PAG-01 a PAG-05, API-06, SIS-02/05 |
+| CA7 Máximo 10 entradas | CAN, SRV-09, API-08, SIS-04 |
+| CA8 Informar cantidad y fecha | ORD-05 a ORD-07, API-04, SIS-01 |
 | CA9 Solo usuarios registrados | USR-01 a USR-03 |
 
 ---
@@ -468,7 +442,7 @@ De menor a mayor complejidad, empezando por el dominio puro:
 8. `PSM` y `MAIL`: pasarela simulada y notificador de mail simulado.
 9. `SRV`: orquestación de todo el flujo.
 10. `API`: capa Flask, incluidas las rutas de la pasarela.
-11. `SIS`: frontend responsive, pasarela simulada y pruebas end-to-end.
+11. `SIS`: frontend responsive y pruebas end-to-end en el navegador.
 
 Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados cuentan como un caso con varias entradas.
 
@@ -480,5 +454,5 @@ Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados
 | --- | --- |
 | Unitarias | 137 |
 | Integración | 72 |
-| Sistema | 35 |
-| **Total** | **244** |
+| Sistema | 8 |
+| **Total** | **217** |

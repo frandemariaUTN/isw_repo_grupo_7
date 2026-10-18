@@ -98,7 +98,7 @@ Diseño tomado de la captura de la pasarela de Mercado Pago, adaptado a una sola
 | Tipografía | La del sistema (`-apple-system, "Segoe UI", Roboto, Arial, sans-serif`) |
 | Botón | Bordes redondeados (unos 8 px), alto de 48 px o más |
 
-La pasarela usa su identidad visual propia y **no** la de la app (Lato y la paleta del PO), para que se perciba como una página externa (caso SIS-35). No se usa el logo oficial de Mercado Pago: alcanza con el texto del encabezado.
+La pasarela usa su identidad visual propia y **no** la de la app (Lato y la paleta del PO), para que se perciba como una página externa. No se usa el logo oficial de Mercado Pago: alcanza con el texto del encabezado.
 
 ### Mensajes de error junto a cada campo
 
@@ -144,7 +144,7 @@ Tras un rechazo o una cancelación, la compra pasa a `FALLIDA`, el cupo se liber
 
 - **Los datos de la tarjeta nunca se guardan:** ni en la base de datos ni en logs. Tras validarlos solo se conservan la marca y los últimos 4 dígitos (casos TAR-25 y PSM-19).
 - **La sesión de pago se identifica con un token aleatorio** de al menos 32 caracteres, imposible de adivinar (PSM-03).
-- **Una sesión se procesa una sola vez:** reintentar el pago o recargar la página no duplica el pago ni el mail (PSM-13, SRV-07, API-18, SIS-31, SIS-34).
+- **Una sesión se procesa una sola vez:** reintentar el pago o recargar la página no duplica el pago ni el mail (PSM-13, SRV-07, API-18).
 - **Dominio puro:** la validación de tarjeta (`tarjetas.py`) y la lógica de la sesión de pago (`pasarela.py`) no dependen de Flask, así que se prueban sin servidor.
 
 ---
