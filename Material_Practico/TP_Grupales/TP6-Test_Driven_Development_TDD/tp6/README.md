@@ -46,6 +46,7 @@ Si el entorno está activo, el prompt muestra `(.venv)` al principio de la líne
 pytest                 # correr todos los tests
 pytest -v              # ver cada test con su resultado
 pytest -k PRE-05       # correr un caso por su ID
+pytest tests/system    # solo las pruebas en el navegador (usan el Edge instalado)
 flake8 src tests       # verificar PEP8 (no debe imprimir nada)
 python run.py          # levantar la app en http://127.0.0.1:5000
 ```
@@ -169,6 +170,6 @@ Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afec
 | `SRV` | Servicio de compra | Hecho |
 | `API` | Capa web Flask | Hecho |
 | Frontend | Pantallas responsive: compra, pasarela, resultado y modal del mail | Hecho |
-| `SIS` | Pruebas de sistema en el navegador | Pendiente |
+| `SIS` | Pruebas de sistema en el navegador (Edge con Playwright) | Hecho |
 
 Actualizar esta tabla al cerrar cada grupo.

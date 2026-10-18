@@ -54,7 +54,7 @@ Para avanzar más rápido se trabaja **por grupos de casos** (decisión D20): un
 
 ## 4. Arquitectura
 
-Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Adaptadores en `src/ecoharmony/persistencia/` (`RepositorioSQLite`) y `src/ecoharmony/notificaciones/` (`NotificadorSimulado`). El caso de uso está en `src/ecoharmony/aplicacion/` (`ServicioDeCompra`: `comprar`, `pagar`, `cancelar`). Tests en `tests/unit/`, `tests/integration/` y, más adelante, `tests/system/`.
+Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Adaptadores en `src/ecoharmony/persistencia/` (`RepositorioSQLite`) y `src/ecoharmony/notificaciones/` (`NotificadorSimulado`). El caso de uso está en `src/ecoharmony/aplicacion/` (`ServicioDeCompra`: `comprar`, `pagar`, `cancelar`). Tests en `tests/unit/`, `tests/integration/` y `tests/system/`.
 
 | Módulo | Contenido |
 | --- | --- |
@@ -88,11 +88,9 @@ Convenciones de diseño:
 
 ## 6. Estado y próximos pasos
 
-**Hecho** (252 tests en verde): grupos `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR`, `BD`, `PSM`, `MAIL`, `SRV` y `API`. El frontend (plantillas en `web/templates/`, CSS y JS en `web/static/`) está hecho; falta probarlo con `SIS`.
+**Hecho** (260 tests en verde): todos los grupos, de `PRE` a `SIS`. El frontend está en `web/templates/` y `web/static/`; las pruebas de sistema (`tests/system/`) usan Playwright 1.50 con el Edge instalado.
 
-**Pendiente**, en este orden (ver sección 7 de `docs/Casos_de_Prueba.md`):
-
-1. `SIS`: pruebas end-to-end con Playwright (puede usar el Edge instalado, sin descargar Chromium).
+**Pendiente:** ajustes que pida el equipo y respuestas de los PO a los supuestos S1 a S9.
 
 ## 7. Cómo colaborar con el equipo
 
