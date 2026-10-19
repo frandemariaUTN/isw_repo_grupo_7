@@ -122,6 +122,7 @@ Un test que pasa de entrada (porque el código ya generaliza) se commitea como `
 | `docs/Casos_de_Prueba.md` | Lista de casos de prueba (unitarias, integración, sistema), su origen y los supuestos pendientes. **Respalda los tests: si un test cambia, se actualiza este archivo.** |
 | `docs/Decisiones_de_Diseno.md` | Decisiones de diseño y su motivo. Se completa con cada ciclo relevante. |
 | `docs/Pasarela_Simulada.md` | Diseño del flujo y de las pantallas de la pasarela de pago simulada. |
+| `docs/Estructura_del_Proyecto.md` | Resumen corto de qué hay en cada carpeta y por qué está armado así. **Empezar por acá.** |
 | Consigna, FAQs, US y descripción del dominio | Fuente de las reglas de negocio. |
 
 ---
