@@ -35,7 +35,7 @@
             <label for="numero">Número de tarjeta</label>
             <div class="mp-entrada">
               <input id="numero" name="numero" inputmode="numeric" autocomplete="cc-number"
-                placeholder="1234 1234 1234 1234" maxlength="23">
+                placeholder="1234 1234 1234 1234" maxlength="19">
               <span class="mp-marca" id="marca" aria-live="polite"></span>
             </div>
             {% if errores.numero %}<p class="mp-error">{{ errores.numero }}</p>{% endif %}

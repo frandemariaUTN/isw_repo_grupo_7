@@ -9,7 +9,7 @@
   const vencimiento = document.getElementById("vencimiento");
 
   numero.addEventListener("input", () => {
-    const digitos = soloDigitos(numero.value).slice(0, 19);
+    const digitos = soloDigitos(numero.value).slice(0, 16);
     numero.value = digitos.replace(/(\d{4})(?=\d)/g, "$1 ");
     if (digitos.startsWith("4")) marca.textContent = "VISA";
     else if (digitos.startsWith("5")) marca.textContent = "MASTERCARD";

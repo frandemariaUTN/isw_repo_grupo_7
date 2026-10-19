@@ -5,8 +5,7 @@ from dataclasses import dataclass
 from ecoharmony.dominio.errores import ErrorDeValidacion, ErroresDeValidacion
 from ecoharmony.dominio.reloj import hoy_local
 
-LARGO_MINIMO = 13
-LARGO_MAXIMO = 19
+LARGO_DEL_NUMERO = 16
 
 # Letras (con acentos) separadas por espacios, apostrofos o guiones.
 _LETRAS = r"[^\W\d_]+"
@@ -25,7 +24,7 @@ def validar_numero(valor):
     numero = re.sub(r"[ \-]", "", _texto(valor))
     if (
         not numero.isdigit()
-        or not LARGO_MINIMO <= len(numero) <= LARGO_MAXIMO
+        or len(numero) != LARGO_DEL_NUMERO
         or not _cumple_luhn(numero)
     ):
         raise ErrorDeValidacion("numero", "Revisá el número de tarjeta.")
