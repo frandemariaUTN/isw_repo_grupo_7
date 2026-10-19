@@ -50,8 +50,8 @@ def test_numero_valido_es_aceptado_y_normalizado(valor, esperado):
         pytest.param("5031 7557 3453 06AB", id="TAR-05"),
         pytest.param("5031 7557 3453 0605", id="TAR-06"),
         # Los dos siguientes cumplen Luhn: se rechazan solo por el largo.
-        pytest.param("450995356620", id="TAR-07"),
-        pytest.param("45099535662337041230", id="TAR-08"),
+        pytest.param("450995356623377", id="TAR-07"),
+        pytest.param("45099535662337049", id="TAR-08"),
     ],
 )
 def test_numero_invalido_es_rechazado(valor):
@@ -65,7 +65,7 @@ def test_numero_invalido_es_rechazado(valor):
     [
         pytest.param(VISA, "Visa", id="TAR-09"),
         pytest.param(MASTERCARD, "Mastercard", id="TAR-10"),
-        pytest.param("371449635398431", "Tarjeta", id="TAR-11"),
+        pytest.param("6011111111111117", "Tarjeta", id="TAR-11"),
     ],
 )
 def test_marca_se_detecta_por_el_primer_digito(numero, esperada):

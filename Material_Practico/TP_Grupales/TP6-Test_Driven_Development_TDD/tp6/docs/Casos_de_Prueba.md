@@ -266,11 +266,11 @@ Datos de prueba: Mastercard `5031 7557 3453 0604`, Visa `4509 9535 6623 3704`, c
 | TAR-04 | Número vacío o `None` | Rechazado: es obligatorio | CA4 |
 | TAR-05 | Número con letras | Rechazado | CA4 |
 | TAR-06 | Número que no cumple el algoritmo de Luhn (`...0605`) | Rechazado | CA4 |
-| TAR-07 | Número de 12 dígitos | Rechazado: demasiado corto | CA4 |
-| TAR-08 | Número de 20 dígitos | Rechazado: demasiado largo | CA4 |
+| TAR-07 | Número de 15 dígitos | Rechazado: debe tener 16 dígitos | CA4 |
+| TAR-08 | Número de 17 dígitos | Rechazado: debe tener 16 dígitos | CA4 |
 | TAR-09 | Marca de un número que empieza con 4 | `Visa` | CA4 |
 | TAR-10 | Marca de un número que empieza con 5 | `Mastercard` | CA4 |
-| TAR-11 | Marca de un número con otro inicio | `Tarjeta` (genérica) | CA4 |
+| TAR-11 | Marca de un número de 16 dígitos con otro inicio (`6011 ...`) | `Tarjeta` (genérica) | CA4 |
 | TAR-12 | Vencimiento `11/30` | Válido | CA4 |
 | TAR-13 | Vencimiento `10/26` (mes actual) | Válido: vence a fin de mes | CA4 |
 | TAR-14 | Vencimiento `09/26` | Rechazado: tarjeta vencida | CA4 |
