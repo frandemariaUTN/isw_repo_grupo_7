@@ -1,9 +1,15 @@
 """Armado del mail de confirmacion de compra."""
+from collections import Counter
 from dataclasses import dataclass
 
 from ecoharmony.dominio.formatos import formatear_fecha, formatear_monto
 from ecoharmony.dominio.pagos import FormaDePago
-from ecoharmony.dominio.precios import calcular_precio
+from ecoharmony.dominio.pases import Pase
+from ecoharmony.dominio.precios import (
+    EDAD_MAX_MENOR_CON_DESCUENTO,
+    EDAD_MIN_MAYOR_CON_DESCUENTO,
+    calcular_precio,
+)
 
 NOMBRE_DE_FORMA_DE_PAGO = {
     FormaDePago.EFECTIVO: "Efectivo",
@@ -19,13 +25,40 @@ class Mail:
     codigo_qr: str = ""
 
 
+NOMBRE_DE_PASE = {Pase.VIP: "VIP", Pase.COMUN: "Común"}
+CATEGORIAS_DE_EDAD = ("menor", "adulto", "adulto mayor")
+
+
+def categoria_de_edad(edad):
+    # Mismos cortes que los descuentos por edad (FAQ 7).
+    if edad <= EDAD_MAX_MENOR_CON_DESCUENTO:
+        return "menor"
+    if edad >= EDAD_MIN_MAYOR_CON_DESCUENTO:
+        return "adulto mayor"
+    return "adulto"
+
+
 def contenido_qr(compra):
-    # Lo que se lee en la entrada del parque (respuesta del PO al S5).
-    return (
-        f"ECOHARMONY|ORDEN:{compra.numero_orden}"
-        f"|FECHA:{compra.fecha_visita.isoformat()}"
-        f"|ENTRADAS:{compra.cantidad_de_entradas}"
+    # Texto legible que se lee en la entrada del parque (respuesta del PO
+    # al S5): orden, fecha, total y detalle por pase y edad.
+    cantidad = compra.cantidad_de_entradas
+    lineas = [
+        "EcoHarmony Park",
+        f"Orden N° {compra.numero_orden} - "
+        f"{formatear_fecha(compra.fecha_visita)}",
+        f"Total: {cantidad} {'entrada' if cantidad == 1 else 'entradas'}",
+    ]
+    grupos = Counter(
+        (v.pase, categoria_de_edad(v.edad)) for v in compra.visitantes
     )
+    for pase in (Pase.VIP, Pase.COMUN):
+        for categoria in CATEGORIAS_DE_EDAD:
+            if grupos[(pase, categoria)]:
+                lineas.append(
+                    f"{grupos[(pase, categoria)]} "
+                    f"{NOMBRE_DE_PASE[pase]} {categoria}"
+                )
+    return "\n".join(lineas)
 
 
 def armar_mail(compra):
