@@ -151,9 +151,9 @@ def test_psm_17_dos_pagos_tienen_numeros_de_operacion_distintos(pasarela):
     assert a.numero_operacion != b.numero_operacion
 
 
-def test_psm_18_no_se_crea_sesion_con_monto_cero(pasarela):
-    with pytest.raises(ErrorDePasarela):
-        pasarela.crear_sesion(numero_orden=1, monto=0)
+def test_psm_18_se_crea_sesion_con_monto_cero(pasarela):
+    sesion = pasarela.crear_sesion(numero_orden=1, monto=0)
+    assert (sesion.estado, sesion.monto) == (EstadoSesion.ABIERTA, 0)
 
 
 def test_psm_19_la_sesion_pagada_solo_guarda_la_tarjeta_validada(

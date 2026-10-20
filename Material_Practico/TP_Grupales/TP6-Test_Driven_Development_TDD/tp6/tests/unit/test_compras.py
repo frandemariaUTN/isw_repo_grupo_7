@@ -132,14 +132,14 @@ def test_pag_07_compra_con_tarjeta_queda_pendiente_de_pago_online(comprar):
     assert compra.estado == EstadoCompra.PENDIENTE_PAGO_ONLINE
 
 
-def test_pag_13_tarjeta_con_total_cero_queda_pagada(comprar):
+def test_pag_13_tarjeta_con_total_cero_queda_pendiente_de_pago(comprar):
     compra = comprar(
         forma_de_pago="tarjeta",
         cantidad=2,
         visitantes=visitantes_de(2, edad=2),
     )
     assert compra.total == 0
-    assert compra.estado == EstadoCompra.PAGADA
+    assert compra.estado == EstadoCompra.PENDIENTE_PAGO_ONLINE
 
 
 # ---- CAN: cantidad y limite de 10 entradas por fecha ------------------

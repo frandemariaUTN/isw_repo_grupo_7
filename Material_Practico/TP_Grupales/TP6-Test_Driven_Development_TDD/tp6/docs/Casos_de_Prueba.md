@@ -219,7 +219,7 @@ Los supuestos S1 a S10 se consultaron con el PO, que respondió el 20/10/2026.
 | PAG-10 | `PENDIENTE_PAGO_ONLINE` y pago pendiente | Sigue `PENDIENTE_PAGO_ONLINE` | CA4 |
 | PAG-11 | `PAGADA` recibe un rechazo | Transición inválida: se mantiene `PAGADA` | Diseño |
 | PAG-12 | `FALLIDA` recibe una aprobación | Transición inválida | S4 |
-| PAG-13 | Tarjeta con total $0 | Pasa directo a `PAGADA` ⚠️ | S8 |
+| PAG-13 | Tarjeta con total $0 | Queda `PENDIENTE_PAGO_ONLINE`, como cualquier compra con tarjeta | S8 |
 
 ### 3.8 Orden de compra (`ORD`)
 
@@ -338,7 +338,7 @@ Reemplaza a la integración real con Mercado Pago (la FAQ 4 autoriza simularla).
 | PSM-15 | Pagar una sesión cancelada | Error | S13 |
 | PSM-16 | Cancelar una sesión ya cerrada | Error y no cambia el resultado | Diseño |
 | PSM-17 | Dos pagos aprobados | Números de operación distintos | Diseño |
-| PSM-18 | Crear sesión con monto $0 | Error: no hay nada que cobrar | S8 ⚠️ |
+| PSM-18 | Crear sesión con monto $0 | Se crea la sesión `ABIERTA` (se paga igual por la pasarela) | S8 |
 | PSM-19 | Después de pagar | La sesión no conserva número de tarjeta ni código de seguridad | S15 |
 
 ### 4.3 Notificador de mail simulado (`MAIL`)
@@ -367,7 +367,7 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 | SRV-10 | Validación fallida | La base queda sin cambios | CA1 |
 | SRV-11 | Compra `FALLIDA` previa de 10 entradas | Se puede volver a comprar 10 | S4 |
 | SRV-12 | Compra confirmada (efectivo o pago aprobado) | El resultado incluye el email al que se envió el mail, para mostrar el modal | FAQ 5 |
-| SRV-13 | Tarjeta con total $0 | `PAGADA`, mail enviado, sin crear sesión de pago ⚠️ | S8 |
+| SRV-13 | Tarjeta con total $0 | Pasa por la pasarela: queda `PENDIENTE_PAGO_ONLINE` y, al aprobarse el pago, `PAGADA` con mail | S8 |
 | SRV-14 | Pago aprobado | El resultado incluye el mensaje final con cantidad y fecha | CA8 |
 
 ### 4.5 API web con Flask (`API`)

@@ -191,14 +191,17 @@ def test_compra_confirmada_informa_el_mail_para_el_modal(servicio, forma):
     assert resultado.mail_enviado_a == USUARIO.email
 
 
-def test_srv_13_tarjeta_con_total_cero_no_pasa_por_la_pasarela(
+def test_srv_13_tarjeta_con_total_cero_pasa_igual_por_la_pasarela(
     servicio, notificador
 ):
     resultado = servicio.comprar(
         datos_compra(edades=(2, 3)), USUARIO, AHORA
     )
-    assert resultado.compra.estado == EstadoCompra.PAGADA
-    assert resultado.url_pago is None
+    assert resultado.compra.estado == EstadoCompra.PENDIENTE_PAGO_ONLINE
+    assert resultado.url_pago.startswith("/pasarela/")
+    assert notificador.enviados == []
+    pagada = servicio.pagar(token_de(resultado), tarjeta(), AHORA)
+    assert pagada.compra.estado == EstadoCompra.PAGADA
     assert len(notificador.enviados) == 1
 
 
