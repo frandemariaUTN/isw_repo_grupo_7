@@ -390,10 +390,10 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 | API-14 | `POST /pasarela/<token>/pagar` con titular `APRO` | Redirige a `/compras/<n>/resultado` y la compra queda `PAGADA` | CA4 |
 | API-15 | `POST /pasarela/<token>/pagar` con tarjeta inválida | 400 con errores por campo y la sesión sigue abierta | CA4 |
 | API-16 | `POST /pasarela/<token>/pagar` con titular `OTHE` | Redirige al resultado con rechazo y la compra queda `FALLIDA` | S12, S13 |
-| API-17 | `POST /pasarela/<token>/cancelar` | Redirige a la app y la compra queda `FALLIDA` | S13 |
+| API-17 | `POST /pasarela/<token>/cancelar` | Redirige al resultado con un pop-up "El pago fue cancelado." y la compra queda `FALLIDA` | S4, S13 |
 | API-18 | `POST /pasarela/<token>/pagar` sobre una sesión ya cerrada | Redirige al resultado sin reprocesar | Diseño |
 | API-19 | `GET /compras/<n>/resultado` de una compra aprobada | Mensaje de éxito con cantidad de entradas y fecha | CA8 |
-| API-20 | `GET /compras/<n>/resultado` de una compra rechazada o pendiente | Mensaje de rechazo con el motivo, o de pago pendiente | CA4 |
+| API-20 | `GET /compras/<n>/resultado` de una compra rechazada o pendiente | Rechazo: pop-up con el motivo. Pendiente: mensaje de pago pendiente, sin pop-up | CA4, S4 |
 | API-21 | `GET /compras/<n>/resultado` de una compra de otro usuario o inexistente | 404 | CA9 |
 | API-22 | Cualquier petición | Usa el usuario de la sesión mockeada | FAQ 19 |
 
@@ -410,7 +410,7 @@ Se ejecutan con Playwright usando el **Microsoft Edge instalado** (no se descarg
 | SIS-03 | **Prueba de usuario 3:** intentar elegir un lunes | No se puede seleccionar (día deshabilitado) | US, CA5, FAQ 2 |
 | SIS-04 | **Prueba de usuario 4:** intentar cargar 11 entradas | El botón para agregar se deshabilita al llegar a 10 y se muestra un aviso | US, CA7 |
 | SIS-05 | Compra completa en efectivo | No pasa por la pasarela: pantalla final con instrucciones de boletería y modal del mail | CA3, CA6 |
-| SIS-06 | Pago rechazado en la pasarela (titular `OTHE`) | Vuelve a la app con el mensaje de rechazo | S12, S13 |
+| SIS-06 | Pago rechazado en la pasarela (titular `OTHE`) | Vuelve a la app y un pop-up informa el rechazo | S4, S12, S13 |
 | SIS-07 | Ingresar edades 2, 10 y 65 | Cada subtotal muestra el descuento ($0, $5.000, $5.000) y el total se recalcula ($10.000) | CA1, FAQ 7 |
 | SIS-08 | Pantalla de celular chica (375×667) | Sin scroll horizontal y botones de al menos 44 px | FAQ 24 |
 

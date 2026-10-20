@@ -84,13 +84,16 @@ def test_sis_05_compra_en_efectivo(pagina):
     expect(pagina.locator("#modal-mail")).to_be_visible()
 
 
-def test_sis_06_pago_rechazado_muestra_el_motivo(pagina):
+def test_sis_06_pago_rechazado_muestra_el_motivo_en_un_pop_up(pagina):
     elegir_fecha(pagina)
     cargar_edades(pagina, 30)
     elegir_forma(pagina, "tarjeta")
     pagina.click("#confirmar")
     pagar_con_tarjeta(pagina, "OTHE")
-    expect(pagina.get_by_text("El pago fue rechazado.")).to_be_visible()
+    expect(pagina.locator("#modal-pago")).to_be_visible()
+    expect(pagina.locator("#modal-pago")).to_contain_text(
+        "El pago fue rechazado."
+    )
 
 
 def test_sis_07_los_subtotales_muestran_el_descuento_por_edad(pagina):

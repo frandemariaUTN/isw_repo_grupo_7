@@ -208,12 +208,15 @@ def test_api_16_pago_rechazado_redirige_y_deja_la_compra_fallida(
     assert repositorio.buscar(1).estado == EstadoCompra.FALLIDA
 
 
-def test_api_17_cancelar_vuelve_a_la_app_y_deja_la_compra_fallida(
+def test_api_17_cancelar_vuelve_a_la_app_con_aviso_y_compra_fallida(
     cliente, token, repositorio
 ):
     respuesta = cliente.post(f"/pasarela/{token}/cancelar")
-    assert respuesta.location == "/"
+    assert respuesta.location.startswith("/compras/1/resultado")
     assert repositorio.buscar(1).estado == EstadoCompra.FALLIDA
+    html = cliente.get(respuesta.location).get_data(as_text=True)
+    assert 'id="modal-pago"' in html
+    assert "El pago fue cancelado." in html
 
 
 def test_api_18_pagar_una_sesion_cerrada_no_reprocesa(
@@ -240,24 +243,28 @@ def test_api_19_resultado_aprobado_informa_cantidad_fecha_y_mail(
 
 
 @pytest.mark.parametrize(
-    "titular, mensaje",
+    "titular, mensaje, con_pop_up",
     [
-        pytest.param("OTHE", "El pago fue rechazado.", id="API-20-rechazo"),
         pytest.param(
-            "CONT", "Tu pago está pendiente de acreditación.",
+            "OTHE", "El pago fue rechazado.", True, id="API-20-rechazo"
+        ),
+        pytest.param(
+            "CONT", "Tu pago está pendiente de acreditación.", False,
             id="API-20-pendiente",
         ),
     ],
 )
 def test_resultado_rechazado_o_pendiente_informa_el_motivo(
-    cliente, token, titular, mensaje
+    cliente, token, titular, mensaje, con_pop_up
 ):
     respuesta = cliente.post(
         f"/pasarela/{token}/pagar",
         data=tarjeta(titular),
         follow_redirects=True,
     )
-    assert mensaje in respuesta.get_data(as_text=True)
+    html = respuesta.get_data(as_text=True)
+    assert mensaje in html
+    assert ('id="modal-pago"' in html) == con_pop_up
 
 
 def test_api_21_resultado_de_otro_usuario_o_inexistente_devuelve_404(
