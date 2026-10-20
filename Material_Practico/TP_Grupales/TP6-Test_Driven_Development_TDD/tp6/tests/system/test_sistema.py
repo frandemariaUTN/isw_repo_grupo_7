@@ -44,7 +44,7 @@ def test_sis_01_compra_con_tarjeta_aprobada(pagina):
         "Compraste 2 entradas para el 20/10/2026."
     )).to_be_visible()
     expect(pagina.locator("#modal-mail")).to_contain_text(
-        "visitante@ecoharmony.test"
+        "jsbarbera4@gmail.com"
     )
 
 

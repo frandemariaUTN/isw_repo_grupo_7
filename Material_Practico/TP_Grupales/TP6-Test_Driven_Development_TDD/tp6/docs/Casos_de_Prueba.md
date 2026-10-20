@@ -240,7 +240,7 @@ Los supuestos S1 a S10 se consultaron con el PO, que respondió el 20/10/2026.
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| USR-01 | Usuario mock | Tiene email válido y un identificador | FAQ 19 |
+| USR-01 | Usuario mock | Se llama "Salva", tiene identificador y su email es jsbarbera4@gmail.com | FAQ 19 |
 | USR-02 | Compra creada | Queda asociada al usuario de la sesión | CA9 |
 | USR-03 | Compra sin sesión | Rechazada | CA9 |
 

@@ -2,7 +2,8 @@
 from ecoharmony.dominio.usuarios import usuario_mock
 
 
-def test_usr_01_el_usuario_mock_tiene_identificador_y_email_valido():
+def test_usr_01_el_usuario_mock_es_salva_con_su_email():
     usuario = usuario_mock()
     assert usuario.id
-    assert "@" in usuario.email
+    assert usuario.nombre == "Salva"
+    assert usuario.email == "jsbarbera4@gmail.com"

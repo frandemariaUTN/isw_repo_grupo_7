@@ -108,7 +108,7 @@ def test_api_04_compra_en_efectivo(cliente):
     assert (datos["numero_orden"], datos["cantidad"]) == (1, 2)
     assert datos["fecha_visita"] == "20/10/2026"
     assert datos["mensaje"] == "Compraste 2 entradas para el 20/10/2026."
-    assert datos["mail_enviado_a"] == "visitante@ecoharmony.test"
+    assert datos["mail_enviado_a"] == "jsbarbera4@gmail.com"
 
 
 def test_api_05_compra_con_tarjeta_devuelve_url_de_la_pasarela(cliente):
@@ -239,7 +239,7 @@ def test_api_19_resultado_aprobado_informa_cantidad_fecha_y_mail(
     )
     html = respuesta.get_data(as_text=True)
     assert "Compraste 2 entradas para el 20/10/2026." in html
-    assert "visitante@ecoharmony.test" in html
+    assert "jsbarbera4@gmail.com" in html
 
 
 @pytest.mark.parametrize(
