@@ -53,7 +53,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `test_pagos.py` | PAG-01 a PAG-05 y PAG-08 a PAG-12 |
 | `test_usuarios.py` | USR-01 |
 | `test_compras.py` | ORD-01 a ORD-09, USR-02, USR-03, PAG-06, PAG-07, PAG-13, CAN-08 y CAN-10 a CAN-18 |
-| `test_mails.py` | MAI-01 a MAI-11 |
+| `test_mails.py` | MAI-01 a MAI-12 |
 | `test_tarjetas.py` | TAR-01 a TAR-25 |
 | `integration/test_repositorio_sqlite.py` | BD-01 a BD-14 (los casos de contrato, BD-12, se corren contra memoria y SQLite) |
 | `integration/test_pasarela.py` | PSM-01 a PSM-19 |
@@ -94,7 +94,7 @@ Los supuestos S1 a S10 se consultaron con el PO, que respondió el 20/10/2026.
 
 ---
 
-## 3. Pruebas unitarias (139)
+## 3. Pruebas unitarias (140)
 
 ### 3.1 Precios y descuentos (`PRE`)
 
@@ -258,7 +258,8 @@ Los supuestos S1 a S10 se consultaron con el PO, que respondió el 20/10/2026.
 | MAI-08 | Compra en efectivo | Indica que se abona en boletería | S3 |
 | MAI-09 | Montos | Formato "$10.000" | Diseño |
 | MAI-10 | Visitante gratuito | Figura con subtotal $0 | FAQ 7 |
-| MAI-11 | Código QR | El mail lleva el contenido del QR: `ECOHARMONY\|ORDEN:<n>\|FECHA:<aaaa-mm-dd>\|ENTRADAS:<cantidad>` | S5 |
+| MAI-11 | Código QR | El mail lleva un QR con texto legible: "EcoHarmony Park", orden y fecha, total de entradas y el detalle por pase y edad | S5 |
+| MAI-12 | QR de una compra con 10 visitantes de distintos pases y edades (límites 15/16 y 59/60) | Agrupa por pase (VIP, Común) y edad (menor ≤ 15, adulto, adulto mayor ≥ 60): "2 VIP menor", "2 VIP adulto", "1 VIP adulto mayor", "5 Común adulto" | S5, FAQ 7 |
 
 ### 3.11 Tarjeta de crédito o débito (`TAR`)
 
@@ -460,7 +461,7 @@ Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados
 
 | Nivel | Casos |
 | --- | --- |
-| Unitarias | 139 |
+| Unitarias | 140 |
 | Integración | 74 |
 | Sistema | 8 |
-| **Total** | **221** |
+| **Total** | **222** |
