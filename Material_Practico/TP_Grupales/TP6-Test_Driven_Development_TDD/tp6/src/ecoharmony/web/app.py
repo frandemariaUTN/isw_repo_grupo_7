@@ -1,14 +1,19 @@
 """Aplicacion Flask de compra de entradas y pasarela simulada."""
+import io
 from datetime import datetime
 from pathlib import Path
 
-from flask import Flask, jsonify, redirect, render_template, request, url_for
+import segno
+from flask import (
+    Flask, Response, jsonify, redirect, render_template, request, url_for,
+)
 
 from ecoharmony.aplicacion.servicio_de_compra import ServicioDeCompra
 from ecoharmony.dominio.calendario import dias_no_disponibles, sumar_un_mes
 from ecoharmony.dominio.compras import mensaje_final
 from ecoharmony.dominio.errores import ErrorDeValidacion, ErroresDeValidacion
 from ecoharmony.dominio.formatos import formatear_fecha, formatear_monto
+from ecoharmony.dominio.mails import contenido_qr
 from ecoharmony.dominio.pagos import EstadoCompra
 from ecoharmony.dominio.pasarela import (
     ErrorDePasarela,
@@ -148,6 +153,17 @@ def crear_app(
             "resultado.html", usuario=usuario, **_resultado(compra, motivo)
         )
 
+    @app.get("/compras/<int:numero_orden>/qr.svg")
+    def qr(numero_orden):
+        compra = repositorio.buscar(numero_orden)
+        if compra is None or compra.usuario_id != usuario.id:
+            return _no_encontrado()
+        imagen = io.BytesIO()
+        segno.make(contenido_qr(compra)).save(
+            imagen, kind="svg", scale=8, border=2, dark="#1d2b1f"
+        )
+        return Response(imagen.getvalue(), mimetype="image/svg+xml")
+
     def _pantalla_de_pago(sesion, errores=None, datos=None):
         compra = repositorio.buscar(sesion.numero_orden)
         conservados = {
@@ -191,6 +207,7 @@ def _resultado(compra, motivo):
             "mensaje": mensaje_final(compra),
             "en_boleteria": compra.estado == EstadoCompra.PENDIENTE_BOLETERIA,
             "mail": compra.email_usuario,
+            "qr": url_for("qr", numero_orden=compra.numero_orden),
         }
     if compra.estado == EstadoCompra.FALLIDA:
         # El PO pide informar el rechazo o la cancelacion con un pop-up.

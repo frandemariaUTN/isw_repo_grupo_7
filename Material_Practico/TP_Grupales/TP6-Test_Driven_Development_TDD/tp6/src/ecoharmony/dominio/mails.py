@@ -16,6 +16,16 @@ class Mail:
     destinatario: str
     asunto: str
     cuerpo: str
+    codigo_qr: str = ""
+
+
+def contenido_qr(compra):
+    # Lo que se lee en la entrada del parque (respuesta del PO al S5).
+    return (
+        f"ECOHARMONY|ORDEN:{compra.numero_orden}"
+        f"|FECHA:{compra.fecha_visita.isoformat()}"
+        f"|ENTRADAS:{compra.cantidad_de_entradas}"
+    )
 
 
 def armar_mail(compra):
@@ -44,6 +54,7 @@ def armar_mail(compra):
             f"orden {compra.numero_orden}"
         ),
         cuerpo="\n".join(lineas),
+        codigo_qr=contenido_qr(compra),
     )
 
 

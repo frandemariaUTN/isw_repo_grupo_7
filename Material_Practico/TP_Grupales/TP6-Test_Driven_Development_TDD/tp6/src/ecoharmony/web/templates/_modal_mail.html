@@ -5,5 +5,7 @@
   </div>
   <h2 id="modal-mail-titulo">Mail enviado</h2>
   <p>Te enviamos la confirmación a<br><strong id="modal-mail-destino">{{ mail|default('') }}</strong></p>
+  <img class="modal__qr" id="modal-mail-qr" src="{{ qr|default('') }}" alt="Código QR de la compra" width="180" height="180">
+  <p class="modal__nota">Presentá este código en la entrada del parque.</p>
   <form method="dialog"><button class="boton">Aceptar</button></form>
 </dialog>

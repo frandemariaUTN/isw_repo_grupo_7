@@ -21,12 +21,16 @@ window.EcoHarmony = (() => {
     }
   }
 
-  function abrirModal(id, demora = 0, destino = null) {
+  function abrirModal(id, demora = 0, destino = null, qr = null) {
     const modal = document.getElementById(id);
     if (!modal) return;
     if (destino) {
       const texto = modal.querySelector("#modal-mail-destino");
       if (texto) texto.textContent = destino;
+    }
+    if (qr) {
+      const imagen = modal.querySelector("#modal-mail-qr");
+      if (imagen) imagen.src = qr;
     }
     setTimeout(() => {
       if (typeof modal.showModal === "function") modal.showModal();

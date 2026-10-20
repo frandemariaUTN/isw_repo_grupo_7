@@ -332,7 +332,10 @@
     window.scrollTo({ top: 0, behavior: "smooth" });
     EcoHarmony.lanzarHojas();
     if (cuerpo.mail_enviado_a) {
-      EcoHarmony.abrirModal("modal-mail", 900, cuerpo.mail_enviado_a);
+      EcoHarmony.abrirModal(
+        "modal-mail", 900, cuerpo.mail_enviado_a,
+        `/compras/${cuerpo.numero_orden}/qr.svg`,
+      );
     }
   }
 
