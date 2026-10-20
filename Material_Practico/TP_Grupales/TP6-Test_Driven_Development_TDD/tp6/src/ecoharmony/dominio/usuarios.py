@@ -5,8 +5,11 @@ from dataclasses import dataclass
 @dataclass(frozen=True)
 class Usuario:
     id: str
+    nombre: str
     email: str
 
 
 def usuario_mock():
-    return Usuario(id="usuario-1", email="visitante@ecoharmony.test")
+    return Usuario(
+        id="usuario-1", nombre="Salva", email="jsbarbera4@gmail.com"
+    )

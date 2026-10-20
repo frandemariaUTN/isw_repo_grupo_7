@@ -21,7 +21,7 @@
         </svg>
         <span>EcoHarmony <strong>Park</strong></span>
       </a>
-      {% if usuario %}<span class="cabecera__usuario" title="{{ usuario.email }}">Hola, {{ usuario.email.split('@')[0] }}</span>{% endif %}
+      {% if usuario %}<span class="cabecera__usuario" title="{{ usuario.email }}">Hola, {{ usuario.nombre }}</span>{% endif %}
     </div>
     {% block heroe %}{% endblock %}
     <svg class="cabecera__colinas" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true">
