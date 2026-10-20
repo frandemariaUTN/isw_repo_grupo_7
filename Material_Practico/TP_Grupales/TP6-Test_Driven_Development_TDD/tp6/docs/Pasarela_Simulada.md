@@ -45,11 +45,11 @@ App (formulario)                     Pasarela simulada                    App (r
                                          ├─ aprobado ──────────────────► 7a. Compra pagada, mail y
                                          │                                   "Compraste N entradas
                                          │                                   para el dd/mm/aaaa."
-                                         ├─ rechazado ─────────────────► 7b. Compra fallida y mensaje
+                                         ├─ rechazado ─────────────────► 7b. Compra fallida y pop-up
                                          │                                   con el motivo.
                                          ├─ pendiente ─────────────────► 7c. Mensaje de pago pendiente.
                                          └─ flecha "volver" ───────────► 7d. Compra fallida (cancelada),
-                                                                             cupo liberado.
+                                                                             cupo liberado y pop-up.
 ```
 
 **Regla clave:** todas las validaciones de la compra (fecha, cantidad, edades, pases y forma de pago, más el límite de 10 entradas por fecha) se hacen **antes** de crear la sesión de pago. La pasarela solo valida la tarjeta.
@@ -63,7 +63,7 @@ App (formulario)                     Pasarela simulada                    App (r
 | `/api/compras` | POST | Valida y crea la compra. Con tarjeta devuelve `url_pago` (`/pasarela/<token>`) |
 | `/pasarela/<token>` | GET | Muestra la pantalla de pago de esa sesión |
 | `/pasarela/<token>/pagar` | POST | Valida la tarjeta, resuelve el pago y redirige al resultado |
-| `/pasarela/<token>/cancelar` | POST | Cancela la sesión y redirige a la app |
+| `/pasarela/<token>/cancelar` | POST | Cancela la sesión y redirige al resultado, que lo informa con un pop-up |
 | `/compras/<n>/resultado` | GET | Pantalla de éxito, rechazo o pago pendiente |
 
 La redirección ocurre en **la misma pestaña** (decisión S11), lo que además es más cómodo en celulares.
@@ -125,7 +125,7 @@ El resultado se elige con el **nombre del titular**, igual que en las tarjetas d
 | `EXPI` | Rechazado por vencimiento | "Hay un problema con la fecha de vencimiento." |
 | `CONT` | Pendiente | "Tu pago está pendiente de acreditación." |
 
-Tras un rechazo o una cancelación, la compra pasa a `FALLIDA`, el cupo se libera y el visitante vuelve a la app para intentar una compra nueva (supuestos S4 y S13).
+Tras un rechazo o una cancelación, la compra pasa a `FALLIDA`, el cupo se libera y el visitante vuelve a la app, donde un pop-up le informa el motivo; para reintentar hace una compra nueva (S4, confirmado por el PO, y S13).
 
 ### Datos de prueba
 
