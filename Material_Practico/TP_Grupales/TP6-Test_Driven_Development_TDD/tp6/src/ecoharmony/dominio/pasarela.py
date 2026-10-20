@@ -61,8 +61,8 @@ class PasarelaSimulada:
         self._operaciones = count(1)
 
     def crear_sesion(self, numero_orden, monto):
-        if monto <= 0:
-            raise ErrorDePasarela("No hay nada que cobrar.")
+        if monto < 0:
+            raise ErrorDePasarela("El monto no puede ser negativo.")
         sesion = SesionDePago(
             token=secrets.token_urlsafe(32),
             numero_orden=numero_orden,

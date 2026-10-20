@@ -37,11 +37,11 @@ def validar_forma_de_pago(valor):
         ) from None
 
 
-def estado_inicial(forma_de_pago, total):
+def estado_inicial(forma_de_pago):
+    # Con tarjeta siempre se pasa por la pasarela, aunque el total sea $0
+    # (respuesta del PO al supuesto S8).
     if forma_de_pago == FormaDePago.EFECTIVO:
         return EstadoCompra.PENDIENTE_BOLETERIA
-    if total == 0:
-        return EstadoCompra.PAGADA
     return EstadoCompra.PENDIENTE_PAGO_ONLINE
 
 

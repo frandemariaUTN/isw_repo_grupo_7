@@ -78,7 +78,7 @@ def crear_compra(datos, usuario, ahora, repositorio):
         forma_de_pago=forma,
         visitantes=tuple(visitantes),
         total=total,
-        estado=estado_inicial(forma, total),
+        estado=estado_inicial(forma),
         creada_en=ahora,
     )
     repositorio.guardar(compra)
