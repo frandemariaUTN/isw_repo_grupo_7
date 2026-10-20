@@ -53,13 +53,13 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `test_pagos.py` | PAG-01 a PAG-05 y PAG-08 a PAG-12 |
 | `test_usuarios.py` | USR-01 |
 | `test_compras.py` | ORD-01 a ORD-09, USR-02, USR-03, PAG-06, PAG-07, PAG-13, CAN-08 y CAN-10 a CAN-18 |
-| `test_mails.py` | MAI-01 a MAI-10 |
+| `test_mails.py` | MAI-01 a MAI-11 |
 | `test_tarjetas.py` | TAR-01 a TAR-25 |
 | `integration/test_repositorio_sqlite.py` | BD-01 a BD-14 (los casos de contrato, BD-12, se corren contra memoria y SQLite) |
 | `integration/test_pasarela.py` | PSM-01 a PSM-19 |
 | `integration/test_notificador.py` | MAIL-01 a MAIL-03 |
 | `integration/test_servicio_de_compra.py` | SRV-01 a SRV-14 |
-| `integration/test_api.py` | API-01 a API-22 |
+| `integration/test_api.py` | API-01 a API-24 |
 | `system/test_sistema.py` | SIS-01 a SIS-08 |
 
 **Estilo:** PEP8, tests con nombres descriptivos en español (`test_<regla>_<condicion>_<resultado>`), un `assert` conceptual por test, parametrización con `pytest.mark.parametrize` para casos similares.
@@ -94,7 +94,7 @@ Los supuestos S1 a S10 se consultaron con el PO, que respondió el 20/10/2026.
 
 ---
 
-## 3. Pruebas unitarias (138)
+## 3. Pruebas unitarias (139)
 
 ### 3.1 Precios y descuentos (`PRE`)
 
@@ -258,6 +258,7 @@ Los supuestos S1 a S10 se consultaron con el PO, que respondió el 20/10/2026.
 | MAI-08 | Compra en efectivo | Indica que se abona en boletería | S3 |
 | MAI-09 | Montos | Formato "$10.000" | Diseño |
 | MAI-10 | Visitante gratuito | Figura con subtotal $0 | FAQ 7 |
+| MAI-11 | Código QR | El mail lleva el contenido del QR: `ECOHARMONY\|ORDEN:<n>\|FECHA:<aaaa-mm-dd>\|ENTRADAS:<cantidad>` | S5 |
 
 ### 3.11 Tarjeta de crédito o débito (`TAR`)
 
@@ -293,7 +294,7 @@ Datos de prueba: Mastercard `5031 7557 3453 0604`, Visa `4509 9535 6623 3704`, c
 
 ---
 
-## 4. Pruebas de integración (72)
+## 4. Pruebas de integración (74)
 
 ### 4.1 Base de datos SQLite (`BD`)
 
@@ -397,6 +398,8 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 | API-20 | `GET /compras/<n>/resultado` de una compra rechazada o pendiente | Rechazo: pop-up con el motivo. Pendiente: mensaje de pago pendiente, sin pop-up | CA4, S4 |
 | API-21 | `GET /compras/<n>/resultado` de una compra de otro usuario o inexistente | 404 | CA9 |
 | API-22 | Cualquier petición | Usa el usuario de la sesión mockeada | FAQ 19 |
+| API-23 | `GET /compras/<n>/qr.svg` de una compra propia | 200 con la imagen SVG del QR | S5 |
+| API-24 | `GET /compras/<n>/qr.svg` de otro usuario o inexistente | 404 | CA9 |
 
 ---
 
@@ -406,11 +409,11 @@ Se ejecutan con Playwright usando el **Microsoft Edge instalado** (no se descarg
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| SIS-01 | **Prueba de usuario 1 de la US:** fecha válida, menos de 10 entradas, edades, pase y tarjeta. Se confirma, se pasa a la pasarela simulada, se ingresa la tarjeta de prueba (titular `APRO`) y se pulsa "Pagar y finalizar" | Pasa: vuelve a la app con mensaje de éxito (cantidad y fecha) y el modal "Mail enviado a …" | US, CA3, CA4, CA8 |
+| SIS-01 | **Prueba de usuario 1 de la US:** fecha válida, menos de 10 entradas, edades, pase y tarjeta. Se confirma, se pasa a la pasarela simulada, se ingresa la tarjeta de prueba (titular `APRO`) y se pulsa "Pagar y finalizar" | Pasa: vuelve a la app con mensaje de éxito (cantidad y fecha) y el modal "Mail enviado a …" con el QR | US, CA3, CA4, CA8, S5 |
 | SIS-02 | **Prueba de usuario 2:** confirmar sin forma de pago | Falla: error visible junto al campo y no se redirige a la pasarela | US, CA6 |
 | SIS-03 | **Prueba de usuario 3:** intentar elegir un lunes | No se puede seleccionar (día deshabilitado) | US, CA5, FAQ 2 |
 | SIS-04 | **Prueba de usuario 4:** intentar cargar 11 entradas | El botón para agregar se deshabilita al llegar a 10 y se muestra un aviso | US, CA7 |
-| SIS-05 | Compra completa en efectivo | No pasa por la pasarela: pantalla final con instrucciones de boletería y modal del mail | CA3, CA6 |
+| SIS-05 | Compra completa en efectivo | No pasa por la pasarela: pantalla final con instrucciones de boletería y modal del mail con el QR | CA3, CA6, S5 |
 | SIS-06 | Pago rechazado en la pasarela (titular `OTHE`) | Vuelve a la app y un pop-up informa el rechazo | S4, S12, S13 |
 | SIS-07 | Ingresar edades 2, 10 y 65 | Cada subtotal muestra el descuento ($0, $5.000, $5.000) y el total se recalcula ($10.000) | CA1, FAQ 7 |
 | SIS-08 | Pantalla de celular chica (375×667) | Sin scroll horizontal y botones de al menos 44 px | FAQ 24 |
@@ -457,7 +460,7 @@ Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados
 
 | Nivel | Casos |
 | --- | --- |
-| Unitarias | 138 |
-| Integración | 72 |
+| Unitarias | 139 |
+| Integración | 74 |
 | Sistema | 8 |
-| **Total** | **218** |
+| **Total** | **221** |

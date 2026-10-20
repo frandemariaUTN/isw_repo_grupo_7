@@ -46,6 +46,7 @@ def test_sis_01_compra_con_tarjeta_aprobada(pagina):
     expect(pagina.locator("#modal-mail")).to_contain_text(
         "jsbarbera4@gmail.com"
     )
+    expect(pagina.locator("#modal-mail .modal__qr")).to_be_visible()
 
 
 def test_sis_02_sin_forma_de_pago_muestra_error_junto_al_campo(pagina):
@@ -82,6 +83,7 @@ def test_sis_05_compra_en_efectivo(pagina):
     )
     expect(pagina.locator("#exito-boleteria")).to_be_visible()
     expect(pagina.locator("#modal-mail")).to_be_visible()
+    expect(pagina.locator("#modal-mail .modal__qr")).to_be_visible()
 
 
 def test_sis_06_pago_rechazado_muestra_el_motivo_en_un_pop_up(pagina):

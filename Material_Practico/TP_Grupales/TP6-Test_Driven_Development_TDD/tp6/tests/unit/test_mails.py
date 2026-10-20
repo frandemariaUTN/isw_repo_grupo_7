@@ -1,4 +1,4 @@
-"""Pruebas unitarias del mail de confirmacion (MAI-01 a MAI-10)."""
+"""Pruebas unitarias del mail de confirmacion (MAI-01 a MAI-11)."""
 import pytest
 
 from ecoharmony.dominio.formatos import formatear_monto
@@ -72,3 +72,8 @@ def test_mai_10_el_visitante_gratuito_figura_con_subtotal_cero(comprar):
     ]
     cuerpo = armar_mail(comprar(cantidad=3, visitantes=visitantes)).cuerpo
     assert "Visitante 3: 2 años, pase COMUN, $0" in cuerpo
+
+
+def test_mai_11_el_mail_lleva_el_codigo_qr_de_la_compra(comprar):
+    mail = armar_mail(comprar())
+    assert mail.codigo_qr == "ECOHARMONY|ORDEN:1|FECHA:2026-10-20|ENTRADAS:2"

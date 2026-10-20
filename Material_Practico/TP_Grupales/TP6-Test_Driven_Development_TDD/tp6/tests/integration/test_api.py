@@ -1,4 +1,4 @@
-"""Pruebas de la API web con Flask (API-01 a API-22)."""
+"""Pruebas de la API web con Flask (API-01 a API-24)."""
 from dataclasses import replace
 from datetime import datetime, timedelta, timezone
 
@@ -281,3 +281,22 @@ def test_api_22_la_compra_queda_a_nombre_del_usuario_mockeado(
 ):
     cliente.post("/api/compras", json=datos_compra("efectivo"))
     assert repositorio.buscar(1).usuario_id == usuario_mock().id
+
+
+def test_api_23_qr_de_una_compra_propia(cliente):
+    cliente.post("/api/compras", json=datos_compra("efectivo"))
+    respuesta = cliente.get("/compras/1/qr.svg")
+    assert respuesta.status_code == 200
+    assert respuesta.mimetype == "image/svg+xml"
+    assert "<svg" in respuesta.get_data(as_text=True)
+
+
+def test_api_24_qr_de_otro_usuario_o_inexistente_devuelve_404(
+    cliente, repositorio
+):
+    cliente.post("/api/compras", json=datos_compra("efectivo"))
+    repositorio.guardar(
+        replace(repositorio.buscar(1), usuario_id="otro-usuario")
+    )
+    assert cliente.get("/compras/1/qr.svg").status_code == 404
+    assert cliente.get("/compras/999/qr.svg").status_code == 404
