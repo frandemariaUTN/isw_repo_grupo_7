@@ -1,0 +1,9 @@
+{# Pop-up que informa el rechazo o la cancelacion del pago (respuesta del PO). #}
+<dialog class="modal" id="modal-pago" aria-labelledby="modal-pago-titulo">
+  <div class="modal__sobre modal__sobre--error" aria-hidden="true">
+    <svg viewBox="0 0 48 48"><path d="M14 14l20 20M34 14L14 34"/></svg>
+  </div>
+  <h2 id="modal-pago-titulo">{{ titulo }}</h2>
+  <p>{{ mensaje }}<br>La compra quedó cancelada y podés intentar una nueva.</p>
+  <form method="dialog"><button class="boton">Aceptar</button></form>
+</dialog>

@@ -16,6 +16,7 @@
   </section>
 </main>
 {% if mail %}{% include "_modal_mail.html" %}{% endif %}
+{% if pop_up %}{% include "_modal_pago.html" %}{% endif %}
 {% endblock %}
 
 {% block scripts %}
@@ -24,5 +25,6 @@
     EcoHarmony.lanzarHojas();
     EcoHarmony.abrirModal("modal-mail", 700);
   }
+  EcoHarmony.abrirModal("modal-pago", 300);
 </script>
 {% endblock %}

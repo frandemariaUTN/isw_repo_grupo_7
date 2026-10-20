@@ -132,8 +132,8 @@ def crear_app(
         try:
             servicio.cancelar(token)
         except ErrorDePasarela:
-            return _ir_al_resultado(sesion)
-        return redirect("/", 303)
+            pass  # Ya estaba resuelta: se muestra el resultado anterior.
+        return _ir_al_resultado(sesion)
 
     @app.get("/compras/<int:numero_orden>/resultado")
     def resultado(numero_orden):
@@ -193,9 +193,11 @@ def _resultado(compra, motivo):
             "mail": compra.email_usuario,
         }
     if compra.estado == EstadoCompra.FALLIDA:
+        # El PO pide informar el rechazo o la cancelacion con un pop-up.
         return {
             "exito": False,
-            "titulo": "No se realizó el pago",
+            "pop_up": True,
+            "titulo": "Pago rechazado" if motivo else "Compra cancelada",
             "mensaje": motivo or "El pago fue cancelado.",
         }
     return {
