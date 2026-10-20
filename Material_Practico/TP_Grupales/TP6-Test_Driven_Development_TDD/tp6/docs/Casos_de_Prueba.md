@@ -33,7 +33,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 - `CA1` a `CA9`: criterios de aceptación de la US, en el orden en que figuran.
 - `FAQ n`: pregunta n del documento de FAQs.
 - `DOM`: descripción del dominio.
-- `S1` a `S10`: **supuesto pendiente de confirmar con el PO** (ver sección 2). Se marcan con ⚠️.
+- `S1` a `S10`: supuestos consultados con el PO; sus respuestas están en la sección 2.
 - `S11` a `S15`: **decisión del grupo** sobre la pasarela de pago simulada (ver sección 2).
 
 **Estados de una compra:** `PENDIENTE_BOLETERIA`, `PENDIENTE_PAGO_ONLINE`, `PAGADA`, `FALLIDA`.
@@ -68,25 +68,29 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 
 ---
 
-## 2. Supuestos pendientes de confirmar con el PO
+## 2. Supuestos y respuestas del PO
 
-| ID | Supuesto adoptado mientras tanto | Pregunta al PO |
+Los supuestos S1 a S10 se consultaron con el PO, que respondió el 20/10/2026.
+
+| ID | Regla | Estado |
 | --- | --- | --- |
-| S1 | El tipo de pase se elige **por visitante** | ¿Pase por visitante o uno por compra? |
-| S2 | Las entradas gratuitas (≤ 3 años) **cuentan** para el límite de 10 | ¿Cuentan para el límite? |
-| S3 | Efectivo: la compra queda `PENDIENTE_BOLETERIA` y **se envía el mail** al crearla | ¿Se envía mail con pago en efectivo? ¿Qué estado tiene? |
-| S4 | Pago con tarjeta fallido: la orden pasa a `FALLIDA`, libera el cupo y **no se reintenta** sobre la misma orden | ¿Qué pasa si el pago falla o se cancela? |
-| S5 | El mail de esta US **no lleva QR** (FAQ 18 lo pide solo para actividades) | ¿Lleva QR? |
-| S6 | Edad máxima válida: **120 años** | ¿Cuál es la edad máxima razonable? |
-| S7 | Se puede comprar para hoy **antes de la apertura** (8:30), siempre que sea hasta las 17:30 | ¿Hay un horario mínimo de compra? |
-| S8 | Compra con tarjeta de **total $0** (todos ≤ 3 años): no pasa por la pasarela de pago, queda `PAGADA` | ¿Cómo se trata una compra sin costo? |
-| S9 | El mail se envía al **confirmar** la compra: en efectivo al crearla, con tarjeta al aprobarse el pago | ¿Cuándo debe llegar el mail? |
-| S10 | **Ya no aplica:** el mail se simula con un modal (FAQ 5), así que el envío no puede fallar | Resuelto por la FAQ 5 |
+| S1 | El tipo de pase se elige **por visitante** y se pueden combinar en una compra | Confirmado por el PO |
+| S2 | Las entradas gratuitas (≤ 3 años) **cuentan** para el límite de 10 | Confirmado por el PO |
+| S3 | Efectivo: la compra queda pendiente de pago (`PENDIENTE_BOLETERIA`) y **se envía el mail** al confirmarla | Confirmado por el PO |
+| S4 | Pago con tarjeta rechazado o cancelado: la compra se cancela (`FALLIDA`), libera el cupo y se informa con un pop-up | Confirmado por el PO (agrega el pop-up) |
+| S5 | El mail de esta US **lleva QR** | **Cambiado por el PO** (antes: sin QR) |
+| S6 | Edad máxima válida: **120 años** | Confirmado por el PO ("no hay límite, pero pueden usar 120") |
+| S7 | Se puede comprar para hoy **antes de la apertura** (8:30), siempre que sea hasta las 17:30 | Confirmado por el PO |
+| S8 | Compra con tarjeta de **total $0**: pasa igual por la pasarela de pago | **Cambiado por el PO** (antes: quedaba `PAGADA` sin pasar por la pasarela) |
+| S9 | El mail se envía al **confirmar** la compra: en efectivo al crearla, con tarjeta al aprobarse el pago | Confirmado por el PO |
+| S10 | **Ya no aplica:** el mail se simula con un modal (FAQ 5), así que el envío no puede fallar | Confirmado por el PO |
 | S11 | La pasarela simulada se abre en **la misma pestaña** (redirección) y vuelve a la app al terminar | Decisión del grupo |
 | S12 | El resultado del pago se elige con el **nombre del titular**, como en las tarjetas de prueba de Mercado Pago: `APRO` aprueba, `OTHE`, `FUND`, `SECU` y `EXPI` rechazan, `CONT` queda pendiente. Cualquier otro titular con tarjeta válida **se aprueba** | Decisión del grupo |
 | S13 | En la pasarela **no se reintenta** tras un rechazo ni tras cancelar: la compra pasa a `FALLIDA` y se vuelve a la app (extiende S4) | Decisión del grupo |
 | S14 | La sesión de pago **no vence por tiempo** | Decisión del grupo |
 | S15 | Los datos de la tarjeta **nunca se guardan** (ni en la base de datos ni en logs): tras validar solo se conservan marca y últimos 4 dígitos | Decisión del grupo (seguridad) |
+
+**Pendiente de aclarar:** en el mail del 20/10/2026 el PO indicó que el límite es "de 10 por transacción, no 10 por persona por día", lo que contradice la FAQ 27 ("10 entradas para una fecha específica, ya sea en una o varias transacciones"). Hasta que lo aclaren se mantiene la FAQ 27.
 
 ---
 
@@ -123,8 +127,8 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | EDA-04 | Edad decimal 3.5 | Rechazada: debe ser entera | CA1 |
 | EDA-05 | Edad 0 | Aceptada | CA1, FAQ 7 |
 | EDA-06 | Edad "25" (texto numérico, como llega del formulario) | Se normaliza a 25 y se acepta | CA1 |
-| EDA-07 | Edad 121 | Rechazada ⚠️ | S6 |
-| EDA-08 | Edad 120 | Aceptada ⚠️ | S6 |
+| EDA-07 | Edad 121 | Rechazada | S6 |
+| EDA-08 | Edad 120 | Aceptada | S6 |
 | EDA-09 | Tres visitantes y el segundo sin edad | Error que identifica al visitante 2 | CA1 |
 
 ### 3.3 Tipo de pase (`PAS`)
@@ -136,7 +140,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | PAS-03 | Pase vacío | Rechazado: es obligatorio | CA1 |
 | PAS-04 | Pase "PLATINO" | Rechazado: pase inexistente | CA1 |
 | PAS-05 | Pase " vip " (espacios y minúsculas) | Se normaliza a `VIP` | Diseño |
-| PAS-06 | Una compra con un visitante VIP y otro común | Aceptada, cada uno con su pase ⚠️ | S1 |
+| PAS-06 | Una compra con un visitante VIP y otro común | Aceptada, cada uno con su pase | S1 |
 
 ### 3.4 Días de apertura (`DIA`)
 
@@ -163,7 +167,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | FEC-03 | Hoy a las 17:30 exactas | Aceptada (límite inclusivo) | FAQ 26 |
 | FEC-04 | Hoy a las 17:31 | Rechazada | FAQ 26 |
 | FEC-05 | Hoy a las 19:00 | Rechazada | FAQ 26 |
-| FEC-06 | Hoy a las 08:00 (antes de abrir) | Aceptada ⚠️ | S7 |
+| FEC-06 | Hoy a las 08:00 (antes de abrir) | Aceptada | S7 |
 | FEC-07 | Mañana (15/10/2026) con reloj en las 18:00 de hoy | Aceptada (el límite de las 17:30 aplica solo al mismo día) | FAQ 26 |
 | FEC-08 | 14/11/2026 (hoy + 1 mes exacto) | Aceptada | FAQ 25 |
 | FEC-09 | 15/11/2026 (domingo, hoy + 1 mes + 1 día) | Rechazada por exceder el horizonte | FAQ 25 |
@@ -194,9 +198,9 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | CAN-12 | Usuario con 10 previas, compra 1 | Rechazada | FAQ 27 |
 | CAN-13 | Usuario con 10 previas **en otra fecha**, compra 5 | Aceptada | FAQ 27 |
 | CAN-14 | **Otro usuario** con 10 previas en esa fecha | No afecta al usuario actual | FAQ 27 |
-| CAN-15 | Las entradas gratuitas (≤ 3 años) cuentan para el límite | Cuentan ⚠️ | S2 |
-| CAN-16 | Compras previas `FALLIDA` | No cuentan para el límite ⚠️ | S4 |
-| CAN-17 | Compras previas `PENDIENTE_*` (efectivo o tarjeta sin resolver) | Cuentan para el límite ⚠️ | S3 |
+| CAN-15 | Las entradas gratuitas (≤ 3 años) cuentan para el límite | Cuentan | S2 |
+| CAN-16 | Compras previas `FALLIDA` | No cuentan para el límite | S4 |
+| CAN-17 | Compras previas `PENDIENTE_*` (efectivo o tarjeta sin resolver) | Cuentan para el límite | S3 |
 | CAN-18 | Usuario con 7 previas, compra 5 | El error informa que puede comprar 3 más | CA7 |
 
 ### 3.7 Forma de pago y estados (`PAG`)
@@ -208,13 +212,13 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | PAG-03 | Forma de pago "tarjeta" | Aceptada | CA6 |
 | PAG-04 | Forma de pago "cheque" | Rechazada | CA6 |
 | PAG-05 | Forma de pago " Tarjeta " | Se normaliza | Diseño |
-| PAG-06 | Compra en efectivo creada | Estado `PENDIENTE_BOLETERIA` ⚠️ | S3 |
+| PAG-06 | Compra en efectivo creada | Estado `PENDIENTE_BOLETERIA` | S3 |
 | PAG-07 | Compra con tarjeta creada | Estado `PENDIENTE_PAGO_ONLINE` | CA4 |
 | PAG-08 | `PENDIENTE_PAGO_ONLINE` y pago aprobado | Pasa a `PAGADA` | CA4 |
-| PAG-09 | `PENDIENTE_PAGO_ONLINE` y pago rechazado | Pasa a `FALLIDA` ⚠️ | S4 |
+| PAG-09 | `PENDIENTE_PAGO_ONLINE` y pago rechazado | Pasa a `FALLIDA` | S4 |
 | PAG-10 | `PENDIENTE_PAGO_ONLINE` y pago pendiente | Sigue `PENDIENTE_PAGO_ONLINE` | CA4 |
 | PAG-11 | `PAGADA` recibe un rechazo | Transición inválida: se mantiene `PAGADA` | Diseño |
-| PAG-12 | `FALLIDA` recibe una aprobación | Transición inválida ⚠️ | S4 |
+| PAG-12 | `FALLIDA` recibe una aprobación | Transición inválida | S4 |
 | PAG-13 | Tarjeta con total $0 | Pasa directo a `PAGADA` ⚠️ | S8 |
 
 ### 3.8 Orden de compra (`ORD`)
@@ -250,7 +254,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | MAI-05 | Cuerpo | Detalle por visitante: edad, pase y subtotal | FAQ 18 |
 | MAI-06 | Cuerpo | Incluye el total | FAQ 18 |
 | MAI-07 | Cuerpo | Incluye la forma de pago | CA3 |
-| MAI-08 | Compra en efectivo | Indica que se abona en boletería ⚠️ | S3 |
+| MAI-08 | Compra en efectivo | Indica que se abona en boletería | S3 |
 | MAI-09 | Montos | Formato "$10.000" | Diseño |
 | MAI-10 | Visitante gratuito | Figura con subtotal $0 | FAQ 7 |
 
@@ -284,7 +288,7 @@ Datos de prueba: Mastercard `5031 7557 3453 0604`, Visa `4509 9535 6623 3704`, c
 | TAR-22 | DNI del titular `12345678` y `1234567` | Válidos | FAQ 32 |
 | TAR-23 | DNI inválido (`123`, `abc`, `123456789`, vacío) | Rechazado: solo DNI de 7 u 8 dígitos | FAQ 32 |
 | TAR-24 | Tarjeta con varios datos inválidos a la vez | Se informan **todos** los errores juntos | CA4 |
-| TAR-25 | Tarjeta válida | Conserva solo marca, últimos 4 dígitos y titular (nunca el número completo ni el código de seguridad) ⚠️ | S15 |
+| TAR-25 | Tarjeta válida | Conserva solo marca, últimos 4 dígitos y titular (nunca el número completo ni el código de seguridad) | S15 |
 
 ---
 
@@ -321,21 +325,21 @@ Reemplaza a la integración real con Mercado Pago (la FAQ 4 autoriza simularla).
 | PSM-02 | Sesión creada | Guarda el número de orden y el monto de la compra | CA4 |
 | PSM-03 | Dos sesiones distintas | Tokens distintos e impredecibles (al menos 32 caracteres) | Seguridad |
 | PSM-04 | Buscar un token inexistente | Devuelve `None` | CA4 |
-| PSM-05 | Pagar con titular `APRO` y tarjeta válida | `APROBADO`, sesión `CERRADA` y número de operación | CA4, S12 ⚠️ |
-| PSM-06 | Pagar con otro titular válido (`Facundo Pérez`) | `APROBADO` | S12 ⚠️ |
-| PSM-07 | Titular `OTHE` | `RECHAZADO` por error general | S12 ⚠️ |
-| PSM-08 | Titular `FUND` | `RECHAZADO` por fondos insuficientes | S12 ⚠️ |
-| PSM-09 | Titular `SECU` | `RECHAZADO` por código de seguridad inválido | S12 ⚠️ |
-| PSM-10 | Titular `EXPI` | `RECHAZADO` por problema con la fecha de vencimiento | S12 ⚠️ |
-| PSM-11 | Titular `CONT` | `PENDIENTE` | S12 ⚠️ |
+| PSM-05 | Pagar con titular `APRO` y tarjeta válida | `APROBADO`, sesión `CERRADA` y número de operación | CA4, S12 |
+| PSM-06 | Pagar con otro titular válido (`Facundo Pérez`) | `APROBADO` | S12 |
+| PSM-07 | Titular `OTHE` | `RECHAZADO` por error general | S12 |
+| PSM-08 | Titular `FUND` | `RECHAZADO` por fondos insuficientes | S12 |
+| PSM-09 | Titular `SECU` | `RECHAZADO` por código de seguridad inválido | S12 |
+| PSM-10 | Titular `EXPI` | `RECHAZADO` por problema con la fecha de vencimiento | S12 |
+| PSM-11 | Titular `CONT` | `PENDIENTE` | S12 |
 | PSM-12 | Datos de tarjeta inválidos | Errores de validación y la sesión sigue `ABIERTA` (se puede corregir) | CA4 |
 | PSM-13 | Pagar una sesión ya cerrada | Error y no cambia el resultado anterior | Diseño |
-| PSM-14 | Cancelar una sesión abierta | Sesión `CANCELADA` | S13 ⚠️ |
-| PSM-15 | Pagar una sesión cancelada | Error | S13 ⚠️ |
+| PSM-14 | Cancelar una sesión abierta | Sesión `CANCELADA` | S13 |
+| PSM-15 | Pagar una sesión cancelada | Error | S13 |
 | PSM-16 | Cancelar una sesión ya cerrada | Error y no cambia el resultado | Diseño |
 | PSM-17 | Dos pagos aprobados | Números de operación distintos | Diseño |
 | PSM-18 | Crear sesión con monto $0 | Error: no hay nada que cobrar | S8 ⚠️ |
-| PSM-19 | Después de pagar | La sesión no conserva número de tarjeta ni código de seguridad | S15 ⚠️ |
+| PSM-19 | Después de pagar | La sesión no conserva número de tarjeta ni código de seguridad | S15 |
 
 ### 4.3 Notificador de mail simulado (`MAIL`)
 
@@ -351,17 +355,17 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| SRV-01 | Compra en efectivo válida | Guarda `PENDIENTE_BOLETERIA` y envía mail, sin pasar por la pasarela ⚠️ | S3, S9 |
-| SRV-02 | Compra con tarjeta válida | Guarda `PENDIENTE_PAGO_ONLINE`, crea la sesión de pago y devuelve la URL de la pasarela; aún sin mail ⚠️ | CA4, S9 |
+| SRV-01 | Compra en efectivo válida | Guarda `PENDIENTE_BOLETERIA` y envía mail, sin pasar por la pasarela | S3, S9 |
+| SRV-02 | Compra con tarjeta válida | Guarda `PENDIENTE_PAGO_ONLINE`, crea la sesión de pago y devuelve la URL de la pasarela; aún sin mail | CA4, S9 |
 | SRV-03 | Compra con tarjeta y datos inválidos (sin fecha, 11 entradas, etc.) | No crea compra ni sesión: todo se valida **antes** de ir a la pasarela | CA1, CA4 |
 | SRV-04 | Pago aprobado en la pasarela | Compra `PAGADA` y mail enviado | CA3, CA4 |
-| SRV-05 | Pago rechazado | Compra `FALLIDA`, sin mail ⚠️ | S4, S13 |
+| SRV-05 | Pago rechazado | Compra `FALLIDA`, sin mail | S4, S13 |
 | SRV-06 | Pago pendiente | Sin cambios y sin mail | CA4 |
 | SRV-07 | Se procesa dos veces el mismo pago (doble clic o recarga) | Idempotente: un solo mail y un solo cambio de estado | Diseño |
-| SRV-08 | Cancelar el pago desde la pasarela | Compra `FALLIDA` y cupo liberado ⚠️ | S13 |
+| SRV-08 | Cancelar el pago desde la pasarela | Compra `FALLIDA` y cupo liberado | S13 |
 | SRV-09 | Con base SQLite real: dos compras de 5 y una de 1 | Las dos primeras pasan, la tercera se rechaza | FAQ 27 |
 | SRV-10 | Validación fallida | La base queda sin cambios | CA1 |
-| SRV-11 | Compra `FALLIDA` previa de 10 entradas | Se puede volver a comprar 10 ⚠️ | S4 |
+| SRV-11 | Compra `FALLIDA` previa de 10 entradas | Se puede volver a comprar 10 | S4 |
 | SRV-12 | Compra confirmada (efectivo o pago aprobado) | El resultado incluye el email al que se envió el mail, para mostrar el modal | FAQ 5 |
 | SRV-13 | Tarjeta con total $0 | `PAGADA`, mail enviado, sin crear sesión de pago ⚠️ | S8 |
 | SRV-14 | Pago aprobado | El resultado incluye el mensaje final con cantidad y fecha | CA8 |

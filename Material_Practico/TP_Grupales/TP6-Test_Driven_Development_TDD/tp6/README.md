@@ -127,22 +127,13 @@ Un test que pasa de entrada (porque el código ya generaliza) se commitea como `
 
 ---
 
-## 6. Supuestos pendientes de confirmar con el PO
+## 6. Supuestos y respuestas del PO
 
-Mientras los docentes no respondan, se trabaja con los supuestos S1 a S10 de `docs/Casos_de_Prueba.md` (los casos afectados están marcados con ⚠️). En resumen:
+El PO respondió los supuestos S1 a S10 el 20/10/2026 (detalle en la sección 2 de `docs/Casos_de_Prueba.md`):
 
-- S1: el pase se elige por visitante.
-- S2: las entradas gratuitas cuentan para el límite de 10.
-- S3: en efectivo la compra queda pendiente de pago en boletería.
-- S4: un pago con tarjeta fallido libera el cupo.
-- S5: el mail de esta US no lleva QR.
-- S6: edad máxima válida de 120 años.
-- S7: se puede comprar para hoy antes de la apertura, hasta las 17:30.
-- S8: una compra de $0 no pasa por la pasarela de pago.
-- S9: el mail se envía al confirmar la compra.
-- S10: ya no aplica, porque el mail se simula (FAQ 5).
-
-Cuando llegue una respuesta, se actualizan `Casos_de_Prueba.md` y los tests afectados, y se avisa al resto del equipo.
+- **Confirmados:** pase por visitante (S1), las gratuitas cuentan para el límite (S2), efectivo pendiente de pago con mail al confirmar (S3, S9), rechazo o cancelación anulan la compra (S4), edad máxima 120 (S6) y compra para hoy antes de la apertura (S7).
+- **Cambiados:** el mail lleva QR (S5) y una compra de $0 con tarjeta pasa igual por la pasarela (S8).
+- **Pendiente de aclarar:** el PO dijo "10 por transacción", lo que contradice la FAQ 27 ("10 por fecha, en una o varias transacciones"). Se mantiene la FAQ 27.
 
 ---
 

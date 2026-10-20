@@ -56,7 +56,7 @@ El **dominio** no conoce ni la web ni la base de datos. Las piezas externas (bas
 - **Mercado Pago es simulado** (FAQ 4): una página propia con su aspecto. Para probar, usá la tarjeta `4509 9535 6623 3704`, vencimiento `11/30`, código `123` y cualquier DNI de 7 u 8 dígitos. Con un titular cualquiera el pago se aprueba, y con `OTHE` se rechaza.
 - **Se valida todo antes de pagar.** A la pasarela solo se llega con la compra correcta.
 - **Usuario de sesión fijo**, sin login (FAQ 19).
-- **Lo que los PO todavía no confirmaron** está como supuestos S1 a S9 en `Casos_de_Prueba.md`.
+- **Las respuestas del PO** a nuestras dudas están en la sección 2 de `Casos_de_Prueba.md` (supuestos S1 a S10).
 
 ## Comandos
 

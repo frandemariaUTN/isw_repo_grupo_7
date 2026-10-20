@@ -29,7 +29,7 @@ flake8 src tests       # no debe imprimir nada
 | `docs/Pasarela_Simulada.md` | Flujo, rutas y pantalla de la pasarela simulada |
 | `README.md` | Guía del equipo y tabla de estado del avance (actualizarla al cerrar cada grupo) |
 
-Las reglas de negocio salen de la user story, la descripción del dominio y las FAQs de los PO (docentes). Lo que todavía no confirmaron los PO está como supuestos **S1 a S10** en `Casos_de_Prueba.md` (los casos afectados llevan ⚠️). **No inventes reglas de negocio nuevas:** si algo no está definido, se pregunta.
+Las reglas de negocio salen de la user story, la descripción del dominio y las FAQs de los PO (docentes). Los supuestos **S1 a S10** ya los respondió el PO (20/10/2026, sección 2 de `Casos_de_Prueba.md`); la única duda abierta es el límite de 10 (se mantiene la FAQ 27). **No inventes reglas de negocio nuevas:** si algo no está definido, se pregunta.
 
 ## 3. Cómo se trabaja el ciclo TDD
 
@@ -90,7 +90,7 @@ Convenciones de diseño:
 
 **Hecho** (260 tests en verde): todos los grupos, de `PRE` a `SIS`. El frontend está en `web/templates/` y `web/static/`; las pruebas de sistema (`tests/system/`) usan Playwright 1.50 con el Edge instalado.
 
-**Pendiente:** ajustes que pida el equipo y respuestas de los PO a los supuestos S1 a S9.
+**Pendiente:** aplicar las respuestas del PO del 20/10/2026 (S8: $0 con tarjeta pasa por la pasarela; S4: rechazo con pop-up; S5: QR en el mail) y sumar CAN-19 (cantidad vacía).
 
 ## 7. Cómo colaborar con el equipo
 
