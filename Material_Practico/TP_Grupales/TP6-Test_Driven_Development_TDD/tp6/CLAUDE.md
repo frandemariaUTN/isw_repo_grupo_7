@@ -67,7 +67,7 @@ Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin int
 | `tarjetas.py` | Validación de tarjeta y `TarjetaValidada` (solo marca, últimos 4 y titular) |
 | `pasarela.py` | `PasarelaSimulada`: sesiones de pago con token y resultado según el titular |
 | `repositorio.py` | `RepositorioEnMemoria` (define el contrato del repositorio SQLite) |
-| `usuarios.py`, `mails.py`, `formatos.py`, `errores.py` | Usuario mock, armado del mail, formatos, errores |
+| `usuarios.py`, `mails.py`, `formatos.py`, `errores.py` | Usuario mock (Salva), armado del mail con el contenido del QR, formatos, errores |
 
 Convenciones de diseño:
 
@@ -88,9 +88,9 @@ Convenciones de diseño:
 
 ## 6. Estado y próximos pasos
 
-**Hecho** (260 tests en verde): todos los grupos, de `PRE` a `SIS`. El frontend está en `web/templates/` y `web/static/`; las pruebas de sistema (`tests/system/`) usan Playwright 1.50 con el Edge instalado.
+**Hecho** (266 tests en verde): todos los grupos, de `PRE` a `SIS`, con las respuestas del PO del 20/10/2026 aplicadas (S4 pop-up, S5 QR, S8 $0 por la pasarela). El frontend está en `web/templates/` y `web/static/`; las pruebas de sistema (`tests/system/`) usan Playwright 1.50 con el Edge instalado.
 
-**Pendiente:** aplicar las respuestas del PO del 20/10/2026 (S8: $0 con tarjeta pasa por la pasarela; S4: rechazo con pop-up; S5: QR en el mail) y sumar CAN-19 (cantidad vacía).
+**Pendiente:** que el PO aclare el límite de 10 (por transacción o por fecha); se mantiene la FAQ 27.
 
 ## 7. Cómo colaborar con el equipo
 
