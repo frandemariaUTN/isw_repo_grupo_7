@@ -59,7 +59,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `integration/test_pasarela.py` | PSM-01 a PSM-19 |
 | `integration/test_notificador.py` | MAIL-01 a MAIL-03 |
 | `integration/test_notificador_smtp.py` | MAIL-04 a MAIL-11 |
-| `integration/test_servicio_de_compra.py` | SRV-01 a SRV-14 |
+| `integration/test_servicio_de_compra.py` | SRV-01 a SRV-15 |
 | `integration/test_api.py` | API-01 a API-24 |
 | `system/test_sistema.py` | SIS-01 a SIS-08 |
 
@@ -297,7 +297,7 @@ Datos de prueba: Mastercard `5031 7557 3453 0604`, Visa `4509 9535 6623 3704`, c
 
 ---
 
-## 4. Pruebas de integración (82)
+## 4. Pruebas de integración (83)
 
 ### 4.1 Base de datos SQLite (`BD`)
 
@@ -382,6 +382,7 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 | SRV-12 | Compra confirmada (efectivo o pago aprobado) | El resultado incluye el email al que se envió el mail, para mostrar el modal | FAQ 5 |
 | SRV-13 | Tarjeta con total $0 | Pasa por la pasarela: queda `PENDIENTE_PAGO_ONLINE` y, al aprobarse el pago, `PAGADA` con mail | S8 |
 | SRV-14 | Pago aprobado | El resultado incluye el mensaje final con cantidad y fecha | CA8 |
+| SRV-15 | Falla el envío real del mail | La compra se mantiene, no se informa destinatario y se devuelve un aviso | Diseño |
 
 ### 4.5 API web con Flask (`API`)
 
@@ -472,6 +473,6 @@ Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados
 | Nivel | Casos |
 | --- | --- |
 | Unitarias | 141 |
-| Integración | 82 |
+| Integración | 83 |
 | Sistema | 8 |
-| **Total** | **231** |
+| **Total** | **232** |

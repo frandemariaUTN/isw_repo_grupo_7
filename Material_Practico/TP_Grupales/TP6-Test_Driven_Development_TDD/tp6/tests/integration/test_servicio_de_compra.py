@@ -1,10 +1,13 @@
-"""Pruebas del servicio de compra (SRV-01 a SRV-14)."""
+"""Pruebas del servicio de compra (SRV-01 a SRV-15)."""
 from datetime import date, datetime, timedelta, timezone
 
 import pytest
 
 from ecoharmony.aplicacion.servicio_de_compra import ServicioDeCompra
-from ecoharmony.dominio.errores import ErroresDeValidacion
+from ecoharmony.dominio.errores import (
+    ErrorDeNotificacion,
+    ErroresDeValidacion,
+)
 from ecoharmony.dominio.pagos import EstadoCompra
 from ecoharmony.dominio.pasarela import PasarelaSimulada
 from ecoharmony.dominio.repositorio import RepositorioEnMemoria
@@ -209,3 +212,21 @@ def test_srv_14_pago_aprobado_informa_cantidad_y_fecha(servicio):
     compra = servicio.comprar(datos_compra(), USUARIO, AHORA)
     resultado = servicio.pagar(token_de(compra), tarjeta(), AHORA)
     assert resultado.mensaje == "Compraste 2 entradas para el 20/10/2026."
+
+
+class NotificadorQueFalla:
+    def enviar(self, mail):
+        raise ErrorDeNotificacion("sin conexion")
+
+
+def test_srv_15_si_falla_el_mail_la_compra_se_mantiene_y_se_avisa(
+    repositorio, pasarela
+):
+    servicio = ServicioDeCompra(repositorio, pasarela, NotificadorQueFalla())
+    resultado = servicio.comprar(datos_compra("efectivo"), USUARIO, AHORA)
+    assert repositorio.buscar(resultado.compra.numero_orden) is not None
+    assert resultado.mail_enviado_a is None
+    assert resultado.aviso_mail == (
+        "No pudimos enviar el mail de confirmación. "
+        "Tu compra quedó registrada igual."
+    )
