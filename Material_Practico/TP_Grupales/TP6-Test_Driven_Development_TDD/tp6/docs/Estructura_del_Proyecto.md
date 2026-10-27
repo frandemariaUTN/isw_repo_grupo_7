@@ -121,6 +121,7 @@ Separadas en 3 carpetas. Cada test lleva el ID de su caso (por ejemplo `PRE-05`)
 | --- | --- |
 | `Casos_de_Prueba.md` | Lista de todos los casos de prueba con su origen (criterio de aceptación o FAQ) y las respuestas del PO a nuestras dudas |
 | `Decisiones_de_Diseno.md` | Entregable de la cátedra: cada decisión de diseño (D1, D2, …) con su motivo |
+| `Decisiones_por_Tema.md` | Las mismas decisiones agrupadas por tema (mail, frontend, pago, etc.) con la FAQ o el criterio que las justifica |
 | `Pasarela_Simulada.md` | Flujo, rutas y diseño de la pasarela de pago |
 | `Estructura_del_Proyecto.md` | Este documento |
 | `logo/` | Logo aprobado por el PO (FAQ 17), en versión clara, oscura y SVG |

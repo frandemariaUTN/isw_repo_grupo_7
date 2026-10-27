@@ -12,8 +12,8 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 
 | Nivel | Prefijos | Qué prueba | Dependencias |
 | --- | --- | --- | --- |
-| Unitaria | `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR` | Reglas de dominio puras | Ninguna (reloj inyectado) |
-| Integración | `BD`, `PSM`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí | Base SQLite temporal, pasarela simulada, mail simulado o servidor SMTP falso, Flask test client |
+| Unitaria | `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR` | Reglas de dominio puras | Ninguna: reloj inyectado, y los casos del límite de 10 (CAN-10 a CAN-17) usan el repositorio en memoria del dominio |
+| Integración | `BD`, `PSM`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí. `PSM` prueba la pasarela simulada, que está en el dominio pero reemplaza a un servicio externo (Mercado Pago), por eso se agrupa acá | Base SQLite temporal, pasarela simulada, mail simulado o servidor SMTP falso, Flask test client |
 | Sistema | `SIS` | Flujo completo desde el navegador | Edge con Playwright, app con datos en memoria y reloj fijo |
 
 **Reloj de referencia para los tests:** "hoy" = **miércoles 14/10/2026, 10:00** (hora de Argentina), salvo que el caso indique otra cosa.
@@ -437,15 +437,15 @@ Se ejecutan con Playwright usando el **Microsoft Edge instalado** (no se descarg
 
 | Criterio de aceptación | Casos que lo cubren |
 | --- | --- |
-| CA1 Fecha, cantidad, edad y pase | EDA, PAS, CAN-08/09, ORD-02, SIS-07 |
+| CA1 Fecha, cantidad, edad y pase | EDA, PAS, FEC-11/12, CAN-08/09, ORD-02/08, SRV-03/10, API-01/09, SIS-07 |
 | CA2 Fecha actual o futura | FEC-01 a FEC-07, API-02 |
-| CA3 Mail de confirmación | MAI, MAIL, SRV-01/04/12, SIS-01/05 |
+| CA3 Mail de confirmación | MAI, MAIL, SRV-01/04/12, API-19, SIS-01/05 |
 | CA4 Pago con tarjeta (pasarela simulada) | PAG-07 a PAG-10, TAR, PSM, SRV-02 a SRV-08, API-05 y API-12 a API-20, SIS-01 y SIS-06 |
-| CA5 Parque abierto | DIA, FEC-10/15, API-07, SIS-03 |
+| CA5 Parque abierto | DIA, FEC-10/15, ORD-09, API-07, SIS-03 |
 | CA6 Forma de pago | PAG-01 a PAG-05, API-06, SIS-02/05 |
-| CA7 Máximo 10 entradas | CAN, SRV-09, API-08, SIS-04 |
-| CA8 Informar cantidad y fecha | ORD-05 a ORD-07, API-04, SIS-01 |
-| CA9 Solo usuarios registrados | USR-01 a USR-03 |
+| CA7 Máximo 10 entradas | CAN, ORD-09, SRV-09, API-08, SIS-04 |
+| CA8 Informar cantidad y fecha | ORD-05 a ORD-07, SRV-14, API-04, API-19, SIS-01 |
+| CA9 Solo usuarios registrados | USR-01 a USR-03, API-21 |
 
 ---
 
