@@ -407,12 +407,12 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 | API-16 | `POST /pasarela/<token>/pagar` con titular `OTHE` | Redirige al resultado con rechazo y la compra queda `FALLIDA` | S12, S13 |
 | API-17 | `POST /pasarela/<token>/cancelar` | Redirige al resultado con un pop-up "El pago fue cancelado." y la compra queda `FALLIDA` | S4, S13 |
 | API-18 | `POST /pasarela/<token>/pagar` sobre una sesión ya cerrada | Redirige al resultado sin reprocesar | Diseño |
-| API-19 | `GET /compras/<n>/resultado` de una compra aprobada | Mensaje de éxito con cantidad de entradas y fecha | CA8 |
+| API-19 | `GET /compras/<n>/resultado` de una compra aprobada | Mensaje de éxito con cantidad y fecha, y "Te enviamos la confirmación con tu QR a …" (sin modal) | CA3, CA8 |
 | API-20 | `GET /compras/<n>/resultado` de una compra rechazada o pendiente | Rechazo: pop-up con el motivo. Pendiente: mensaje de pago pendiente, sin pop-up | CA4, S4 |
 | API-21 | `GET /compras/<n>/resultado` de una compra de otro usuario o inexistente | 404 | CA9 |
 | API-22 | Cualquier petición | Usa el usuario de la sesión mockeada | FAQ 19 |
-| API-23 | `GET /compras/<n>/qr.svg` de una compra propia | 200 con la imagen SVG del QR | S5 |
-| API-24 | `GET /compras/<n>/qr.svg` de otro usuario o inexistente | 404 | CA9 |
+| API-23 | `POST /api/compras` en efectivo cuando falla el envío del mail | 201 con `mail_enviado_a` vacío y `aviso_mail` | Diseño |
+| API-24 | Pago aprobado cuando falla el envío del mail | La pantalla de resultado muestra el éxito y el aviso de que no se pudo enviar el mail | Diseño |
 
 ---
 
@@ -422,11 +422,11 @@ Se ejecutan con Playwright usando el **Microsoft Edge instalado** (no se descarg
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| SIS-01 | **Prueba de usuario 1 de la US:** fecha válida, menos de 10 entradas, edades, pase y tarjeta. Se confirma, se pasa a la pasarela simulada, se ingresa la tarjeta de prueba (titular `APRO`) y se pulsa "Pagar y finalizar" | Pasa: vuelve a la app con mensaje de éxito (cantidad y fecha) y el modal "Mail enviado a …" con el QR | US, CA3, CA4, CA8, S5 |
+| SIS-01 | **Prueba de usuario 1 de la US:** fecha válida, menos de 10 entradas, edades, pase y tarjeta. Se confirma, se pasa a la pasarela simulada, se ingresa la tarjeta de prueba (titular `APRO`) y se pulsa "Pagar y finalizar" | Pasa: vuelve a la app con mensaje de éxito (cantidad y fecha) y "Te enviamos la confirmación con tu QR a …" | US, CA3, CA4, CA8 |
 | SIS-02 | **Prueba de usuario 2:** confirmar sin forma de pago | Falla: error visible junto al campo y no se redirige a la pasarela | US, CA6 |
 | SIS-03 | **Prueba de usuario 3:** intentar elegir un lunes | No se puede seleccionar (día deshabilitado) | US, CA5, FAQ 2 |
 | SIS-04 | **Prueba de usuario 4:** intentar cargar 11 entradas | El botón para agregar se deshabilita al llegar a 10 y se muestra un aviso | US, CA7 |
-| SIS-05 | Compra completa en efectivo | No pasa por la pasarela: pantalla final con instrucciones de boletería y modal del mail con el QR | CA3, CA6, S5 |
+| SIS-05 | Compra completa en efectivo | No pasa por la pasarela: pantalla final con instrucciones de boletería y aviso del mail enviado | CA3, CA6 |
 | SIS-06 | Pago rechazado en la pasarela (titular `OTHE`) | Vuelve a la app y un pop-up informa el rechazo | S4, S12, S13 |
 | SIS-07 | Ingresar edades 2, 10 y 65 | Cada subtotal muestra el descuento ($0, $5.000, $5.000) y el total se recalcula ($10.000) | CA1, FAQ 7 |
 | SIS-08 | Pantalla de celular chica (375×667) | Sin scroll horizontal y botones de al menos 44 px | FAQ 24 |

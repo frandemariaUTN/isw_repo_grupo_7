@@ -43,10 +43,11 @@ def test_sis_01_compra_con_tarjeta_aprobada(pagina):
     expect(pagina.get_by_text(
         "Compraste 2 entradas para el 20/10/2026."
     )).to_be_visible()
-    expect(pagina.locator("#modal-mail")).to_contain_text(
+    expect(pagina.get_by_text(
+        "Te enviamos la confirmación con tu QR a "
         "danogamer987654321@gmail.com"
-    )
-    expect(pagina.locator("#modal-mail .modal__qr")).to_be_visible()
+    )).to_be_visible()
+    expect(pagina.locator("#modal-mail")).to_have_count(0)
 
 
 def test_sis_02_sin_forma_de_pago_muestra_error_junto_al_campo(pagina):
@@ -82,8 +83,11 @@ def test_sis_05_compra_en_efectivo(pagina):
         "Compraste 1 entrada para el 20/10/2026."
     )
     expect(pagina.locator("#exito-boleteria")).to_be_visible()
-    expect(pagina.locator("#modal-mail")).to_be_visible()
-    expect(pagina.locator("#modal-mail .modal__qr")).to_be_visible()
+    expect(pagina.locator("#exito-mail")).to_have_text(
+        "Te enviamos la confirmación con tu QR a "
+        "danogamer987654321@gmail.com"
+    )
+    expect(pagina.locator("#modal-mail")).to_have_count(0)
 
 
 def test_sis_06_pago_rechazado_muestra_el_motivo_en_un_pop_up(pagina):

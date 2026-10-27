@@ -4,6 +4,7 @@ from datetime import datetime, timedelta, timezone
 
 import pytest
 
+from ecoharmony.dominio.errores import ErrorDeNotificacion
 from ecoharmony.dominio.pagos import EstadoCompra
 from ecoharmony.dominio.pasarela import EstadoSesion, PasarelaSimulada
 from ecoharmony.dominio.repositorio import RepositorioEnMemoria
@@ -239,7 +240,11 @@ def test_api_19_resultado_aprobado_informa_cantidad_fecha_y_mail(
     )
     html = respuesta.get_data(as_text=True)
     assert "Compraste 2 entradas para el 20/10/2026." in html
-    assert "danogamer987654321@gmail.com" in html
+    assert (
+        "Te enviamos la confirmación con tu QR a "
+        "danogamer987654321@gmail.com"
+    ) in html
+    assert 'id="modal-mail"' not in html
 
 
 @pytest.mark.parametrize(
@@ -283,20 +288,41 @@ def test_api_22_la_compra_queda_a_nombre_del_usuario_mockeado(
     assert repositorio.buscar(1).usuario_id == usuario_mock().id
 
 
-def test_api_23_qr_de_una_compra_propia(cliente):
-    cliente.post("/api/compras", json=datos_compra("efectivo"))
-    respuesta = cliente.get("/compras/1/qr.svg")
-    assert respuesta.status_code == 200
-    assert respuesta.mimetype == "image/svg+xml"
-    assert "<svg" in respuesta.get_data(as_text=True)
+class NotificadorQueFalla:
+    def enviar(self, mail):
+        raise ErrorDeNotificacion("sin conexion")
 
 
-def test_api_24_qr_de_otro_usuario_o_inexistente_devuelve_404(
-    cliente, repositorio
-):
-    cliente.post("/api/compras", json=datos_compra("efectivo"))
-    repositorio.guardar(
-        replace(repositorio.buscar(1), usuario_id="otro-usuario")
+@pytest.fixture
+def cliente_sin_mail(repositorio, pasarela):
+    app = crear_app(
+        repositorio=repositorio,
+        pasarela=pasarela,
+        notificador=NotificadorQueFalla(),
+        reloj=lambda: AHORA,
     )
-    assert cliente.get("/compras/1/qr.svg").status_code == 404
-    assert cliente.get("/compras/999/qr.svg").status_code == 404
+    return app.test_client()
+
+
+def test_api_23_compra_en_efectivo_con_mail_fallido_devuelve_aviso(
+    cliente_sin_mail,
+):
+    respuesta = cliente_sin_mail.post(
+        "/api/compras", json=datos_compra("efectivo")
+    )
+    datos = respuesta.get_json()
+    assert respuesta.status_code == 201
+    assert datos["mail_enviado_a"] is None
+    assert datos["aviso_mail"].startswith("No pudimos enviar el mail")
+
+
+def test_api_24_pago_aprobado_con_mail_fallido_muestra_aviso(
+    cliente_sin_mail,
+):
+    respuesta = cliente_sin_mail.post("/api/compras", json=datos_compra())
+    token = respuesta.get_json()["url_pago"].rsplit("/", 1)[-1]
+    html = cliente_sin_mail.post(
+        f"/pasarela/{token}/pagar", data=tarjeta(), follow_redirects=True
+    ).get_data(as_text=True)
+    assert "Compraste 2 entradas para el 20/10/2026." in html
+    assert "No pudimos enviar el mail de confirmación." in html
