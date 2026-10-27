@@ -1,4 +1,4 @@
-"""Pruebas unitarias del mail de confirmacion (MAI-01 a MAI-12)."""
+"""Pruebas unitarias del mail de confirmacion (MAI-01 a MAI-13)."""
 import pytest
 
 from ecoharmony.dominio.formatos import formatear_monto
@@ -101,3 +101,9 @@ def test_mai_12_el_qr_detalla_las_entradas_por_pase_y_edad(comprar):
         "1 VIP adulto mayor",
         "5 Común adulto",
     ]
+
+
+def test_mai_13_el_cuerpo_incluye_el_detalle_del_qr(comprar):
+    cuerpo = armar_mail(comprar()).cuerpo
+    assert "Tu código QR de ingreso (adjunto) contiene:" in cuerpo
+    assert "Total: 2 entradas\n1 VIP adulto\n1 Común menor" in cuerpo
