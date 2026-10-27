@@ -2,6 +2,7 @@
 from dataclasses import dataclass, replace
 
 from ecoharmony.dominio.compras import crear_compra, mensaje_final
+from ecoharmony.dominio.errores import ErrorDeNotificacion
 from ecoharmony.dominio.mails import armar_mail
 from ecoharmony.dominio.pagos import (
     EstadoCompra,
@@ -9,6 +10,11 @@ from ecoharmony.dominio.pagos import (
     aplicar_resultado_de_pago,
 )
 from ecoharmony.dominio.pasarela import EstadoSesion
+
+AVISO_SIN_MAIL = (
+    "No pudimos enviar el mail de confirmación. "
+    "Tu compra quedó registrada igual."
+)
 
 
 @dataclass(frozen=True)
@@ -18,6 +24,7 @@ class ResultadoDeCompra:
     mail_enviado_a: str = None
     mensaje: str = None
     motivo: str = None
+    aviso_mail: str = None
 
 
 class ServicioDeCompra:
@@ -62,7 +69,16 @@ class ServicioDeCompra:
         return compra
 
     def _confirmar(self, compra):
-        destinatario = self._notificador.enviar(armar_mail(compra))
+        try:
+            destinatario = self._notificador.enviar(armar_mail(compra))
+        except ErrorDeNotificacion:
+            # La compra ya quedo guardada: no se pierde por un problema
+            # con el servidor de mail.
+            return ResultadoDeCompra(
+                compra,
+                mensaje=mensaje_final(compra),
+                aviso_mail=AVISO_SIN_MAIL,
+            )
         return ResultadoDeCompra(
             compra,
             mail_enviado_a=destinatario,

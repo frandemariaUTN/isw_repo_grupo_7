@@ -21,3 +21,7 @@ class ErroresDeValidacion(Exception):
     def __init__(self, errores):
         super().__init__("; ".join(e.mensaje for e in errores))
         self.errores = list(errores)
+
+
+class ErrorDeNotificacion(Exception):
+    """No se pudo enviar el mail (lo lanzan los notificadores)."""

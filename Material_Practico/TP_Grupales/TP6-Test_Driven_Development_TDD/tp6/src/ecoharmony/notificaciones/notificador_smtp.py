@@ -12,12 +12,13 @@ from email.utils import make_msgid
 
 import segno
 
+from ecoharmony.dominio.errores import ErrorDeNotificacion
 from ecoharmony.notificaciones.destinatarios import validar_destinatario
 
 ESPERA_MAXIMA_EN_SEGUNDOS = 15
 
 
-class NotificadorError(Exception):
+class NotificadorError(ErrorDeNotificacion):
     pass
 
 
