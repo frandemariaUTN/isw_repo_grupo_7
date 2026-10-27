@@ -27,7 +27,7 @@ TP6 - TDD | Grupo 7. Documento vivo: se completa a medida que avanzan los ciclos
 | D21 | `crear_compra` acumula todos los errores y los lanza juntos en `ErroresDeValidacion`; la falta de sesión se rechaza de inmediato | El formulario puede marcar todos los campos incorrectos de una vez |
 | D22 | Los estados de la compra son un enum y las transiciones están en una función pura (`aplicar_resultado_de_pago`); una transición inválida deja el estado como está | Es idempotente si el resultado del pago llega más de una vez (doble clic en "Pagar y finalizar" o reenvío desde el navegador) |
 | D23 | `RepositorioEnMemoria` define el contrato de repositorio (`siguiente_numero_de_orden`, `guardar`, `buscar`, `compras_de`) | El repositorio SQLite cumple el mismo contrato: las pruebas de contrato (BD-12) se corren contra los dos |
-| D24 | El límite de 10 cuenta las entradas de las compras no fallidas del usuario para esa fecha | FAQ 27 y supuestos S2, S3 y S4. Pendiente: el PO mencionó "10 por transacción" (mail del 20/10/2026); hasta que lo aclare se mantiene la FAQ 27 |
+| D24 | El límite de 10 cuenta las entradas de las compras no fallidas del usuario para esa fecha | FAQ 27 ("10 entradas para una fecha específica, ya sea en una o varias transacciones") y supuestos S2, S3 y S4 |
 | D25 | La conversión a entero se extrajo a `conversiones.py` (refactor) | Evita repetir la lógica en edad y cantidad |
 | D26 | El mail es un objeto `Mail` (destinatario, asunto, cuerpo y texto del QR, ver D47) armado en el dominio; enviarlo es tarea de un adaptador | El dominio no depende de SMTP y se puede probar sin enviar nada |
 | D27 | `Compra` es inmutable (`frozen=True`) | Un cambio de estado produce una compra nueva, sin modificar la original |

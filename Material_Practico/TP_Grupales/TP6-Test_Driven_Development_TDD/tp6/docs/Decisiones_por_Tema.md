@@ -47,7 +47,6 @@ Resumen de las decisiones tomadas, agrupadas por tema y con su justificación. C
   - Las entradas gratuitas cuentan (S2).
   - Las compras pendientes cuentan (S3).
   - Las compras fallidas no cuentan, porque liberan el cupo (S4).
-- **Pendiente:** en el mail del 20/10/2026 el PO habló de "10 por transacción", lo que contradice la FAQ 27. Hasta que lo aclare, se mantiene la FAQ 27.
 
 ## 6. Validaciones y errores
 
