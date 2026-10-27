@@ -88,7 +88,7 @@ Convenciones de diseño:
 
 ## 6. Estado y próximos pasos
 
-**Hecho** (266 tests en verde): todos los grupos, de `PRE` a `SIS`, con las respuestas del PO del 20/10/2026 aplicadas (S4 pop-up, S5 QR, S8 $0 por la pasarela). El frontend está en `web/templates/` y `web/static/`; las pruebas de sistema (`tests/system/`) usan Playwright 1.50 con el Edge instalado.
+**Hecho** (267 tests en verde): todos los grupos, de `PRE` a `SIS`, con las respuestas del PO del 20/10/2026 aplicadas (S4 pop-up, S5 QR, S8 $0 por la pasarela). El frontend está en `web/templates/` y `web/static/`; las pruebas de sistema (`tests/system/`) usan Playwright 1.50 con el Edge instalado.
 
 **Pendiente:** que el PO aclare el límite de 10 (por transacción o por fecha); se mantiene la FAQ 27.
 
