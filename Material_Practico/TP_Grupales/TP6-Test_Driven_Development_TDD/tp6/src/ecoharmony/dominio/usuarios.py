@@ -11,5 +11,5 @@ class Usuario:
 
 def usuario_mock():
     return Usuario(
-        id="usuario-1", nombre="Salva", email="jsbarbera4@gmail.com"
+        id="usuario-1", nombre="Salva", email="danogamer987654321@gmail.com"
     )
