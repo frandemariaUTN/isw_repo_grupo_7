@@ -58,6 +58,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `integration/test_repositorio_sqlite.py` | BD-01 a BD-14 (los casos de contrato, BD-12, se corren contra memoria y SQLite) |
 | `integration/test_pasarela.py` | PSM-01 a PSM-19 |
 | `integration/test_notificador.py` | MAIL-01 a MAIL-03 |
+| `integration/test_notificador_smtp.py` | MAIL-04 a MAIL-11 |
 | `integration/test_servicio_de_compra.py` | SRV-01 a SRV-14 |
 | `integration/test_api.py` | API-01 a API-24 |
 | `system/test_sistema.py` | SIS-01 a SIS-08 |
@@ -296,7 +297,7 @@ Datos de prueba: Mastercard `5031 7557 3453 0604`, Visa `4509 9535 6623 3704`, c
 
 ---
 
-## 4. Pruebas de integración (74)
+## 4. Pruebas de integración (82)
 
 ### 4.1 Base de datos SQLite (`BD`)
 
@@ -354,6 +355,14 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 | MAIL-01 | Notificador simulado | Registra el mail enviado y se puede inspeccionar | CA3, FAQ 5 |
 | MAIL-02 | Destinatario con formato inválido | Error sin registrar el envío | CA3 |
 | MAIL-03 | Resultado del envío | Informa la dirección a la que se envió (la usa el modal) | FAQ 5 |
+| MAIL-04 | Envío real (SMTP): armado del mensaje | Remitente, destinatario y asunto correctos | CA3 |
+| MAIL-05 | Envío real: contenido | Versión de texto y versión HTML con el cuerpo del mail | CA3 |
+| MAIL-06 | Envío real: QR | La imagen del QR va dentro del HTML y también como adjunto (`qr-entradas.png`) | CA3, S5 |
+| MAIL-07 | Envío real con servidor SMTP falso | Usa STARTTLS, inicia sesión y envía el mensaje | CA3 |
+| MAIL-08 | Falla la conexión o la clave es incorrecta | Lanza `NotificadorError` | Diseño |
+| MAIL-09 | Destinatario con formato inválido | Error sin conectarse al servidor | CA3 |
+| MAIL-10 | Configuración desde el `.env` | Completa: arma la configuración; incompleta: no hay configuración | Diseño |
+| MAIL-11 | `@pytest.mark.smtp_real`: envío real a la casilla de pruebas | Llega el mail (manual: `pytest -m smtp_real`) | CA3 |
 
 ### 4.4 Servicio de compra (`SRV`)
 
@@ -463,6 +472,6 @@ Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados
 | Nivel | Casos |
 | --- | --- |
 | Unitarias | 141 |
-| Integración | 74 |
+| Integración | 82 |
 | Sistema | 8 |
-| **Total** | **223** |
+| **Total** | **231** |
