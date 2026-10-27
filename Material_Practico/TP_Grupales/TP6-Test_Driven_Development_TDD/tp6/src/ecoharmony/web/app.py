@@ -1,5 +1,6 @@
 """Aplicacion Flask de compra de entradas y pasarela simulada."""
 import io
+import os
 from datetime import datetime
 from pathlib import Path
 
@@ -28,9 +29,7 @@ from ecoharmony.dominio.precios import (
 )
 from ecoharmony.dominio.reloj import ZONA_PARQUE, hoy_local
 from ecoharmony.dominio.usuarios import usuario_mock
-from ecoharmony.notificaciones.notificador_simulado import (
-    NotificadorSimulado,
-)
+from ecoharmony.notificaciones import elegir_notificador
 from ecoharmony.persistencia.repositorio_sqlite import RepositorioSQLite
 
 RUTA_BASE_DE_DATOS = Path(__file__).parents[3] / "data" / "ecoharmony.db"
@@ -49,7 +48,7 @@ def crear_app(
     if pasarela is None:
         pasarela = PasarelaSimulada()
     if notificador is None:
-        notificador = NotificadorSimulado()
+        notificador = elegir_notificador(os.environ)
     if reloj is None:
         def reloj():
             return datetime.now(ZONA_PARQUE)

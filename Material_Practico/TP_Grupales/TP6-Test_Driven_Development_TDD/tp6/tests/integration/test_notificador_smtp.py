@@ -4,9 +4,11 @@ Salvo MAIL-11, usan un servidor SMTP falso: no se envia nada de verdad.
 """
 import os
 import smtplib
+from pathlib import Path
 
 import pytest
 
+from ecoharmony.configuracion import cargar_env
 from ecoharmony.dominio.errores import ErrorDeValidacion
 from ecoharmony.dominio.mails import Mail
 from ecoharmony.notificaciones import elegir_notificador
@@ -167,6 +169,7 @@ def test_la_configuracion_se_lee_del_entorno(entorno, esperado):
 
 @pytest.mark.smtp_real
 def test_mail_11_envio_real_a_la_casilla_de_pruebas():
+    cargar_env(Path(__file__).parents[2] / ".env")
     configuracion = ConfiguracionSMTP.desde_entorno(os.environ)
     if configuracion is None:
         pytest.skip("Falta la configuracion SMTP en el .env")
