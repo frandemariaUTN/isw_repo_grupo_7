@@ -80,6 +80,14 @@ def armar_mail(compra):
             "",
             "Recordá abonar en boletería antes de ingresar al parque.",
         ]
+    codigo_qr = contenido_qr(compra)
+    lineas += [
+        "",
+        "Tu código QR de ingreso (adjunto) contiene:",
+        # Se omiten las dos primeras lineas (nombre del parque y orden),
+        # que ya figuran arriba.
+        *codigo_qr.split("\n")[2:],
+    ]
     return Mail(
         destinatario=compra.email_usuario,
         asunto=(
@@ -87,7 +95,7 @@ def armar_mail(compra):
             f"orden {compra.numero_orden}"
         ),
         cuerpo="\n".join(lineas),
-        codigo_qr=contenido_qr(compra),
+        codigo_qr=codigo_qr,
     )
 
 
