@@ -8,6 +8,8 @@
     <h1>{{ titulo }}</h1>
     <p class="exito__mensaje">{{ mensaje }}</p>
     {% if en_boleteria %}<p class="nota">Recordá abonar en boletería antes de ingresar al parque.</p>{% endif %}
+    {% if mail %}<p class="aviso-mail">Te enviamos la confirmación con tu QR a {{ mail }}</p>{% endif %}
+    {% if aviso_mail %}<p class="aviso-mail aviso-mail--error">{{ aviso_mail }}</p>{% endif %}
     {% if exito %}
     <a class="boton boton--secundario" href="/">Volver al inicio</a>
     {% else %}
@@ -15,7 +17,6 @@
     {% endif %}
   </section>
 </main>
-{% if mail %}{% include "_modal_mail.html" %}{% endif %}
 {% if pop_up %}{% include "_modal_pago.html" %}{% endif %}
 {% endblock %}
 
@@ -23,7 +24,6 @@
 <script>
   if (document.querySelector('[data-exito="si"]')) {
     EcoHarmony.lanzarHojas();
-    EcoHarmony.abrirModal("modal-mail", 700);
   }
   EcoHarmony.abrirModal("modal-pago", 300);
 </script>

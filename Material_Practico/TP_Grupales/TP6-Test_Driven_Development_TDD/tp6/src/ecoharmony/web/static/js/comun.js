@@ -1,4 +1,4 @@
-/* Utilidades compartidas: hojas que caen y modal del mail. */
+/* Utilidades compartidas: hojas que caen y pop-ups. */
 window.EcoHarmony = (() => {
   "use strict";
 
@@ -21,17 +21,9 @@ window.EcoHarmony = (() => {
     }
   }
 
-  function abrirModal(id, demora = 0, destino = null, qr = null) {
+  function abrirModal(id, demora = 0) {
     const modal = document.getElementById(id);
     if (!modal) return;
-    if (destino) {
-      const texto = modal.querySelector("#modal-mail-destino");
-      if (texto) texto.textContent = destino;
-    }
-    if (qr) {
-      const imagen = modal.querySelector("#modal-mail-qr");
-      if (imagen) imagen.src = qr;
-    }
     setTimeout(() => {
       if (typeof modal.showModal === "function") modal.showModal();
       else modal.setAttribute("open", "");

@@ -330,13 +330,16 @@
     $("#exito-boleteria").hidden = cuerpo.estado !== "PENDIENTE_BOLETERIA";
     $("#vista-exito").hidden = false;
     window.scrollTo({ top: 0, behavior: "smooth" });
-    EcoHarmony.lanzarHojas();
+    const aviso = $("#exito-mail");
     if (cuerpo.mail_enviado_a) {
-      EcoHarmony.abrirModal(
-        "modal-mail", 900, cuerpo.mail_enviado_a,
-        `/compras/${cuerpo.numero_orden}/qr.svg`,
-      );
+      aviso.textContent =
+        `Te enviamos la confirmación con tu QR a ${cuerpo.mail_enviado_a}`;
+    } else if (cuerpo.aviso_mail) {
+      aviso.textContent = cuerpo.aviso_mail;
+      aviso.classList.add("aviso-mail--error");
     }
+    aviso.hidden = !aviso.textContent;
+    EcoHarmony.lanzarHojas();
   }
 
   /* ---------- Inicio ---------- */
