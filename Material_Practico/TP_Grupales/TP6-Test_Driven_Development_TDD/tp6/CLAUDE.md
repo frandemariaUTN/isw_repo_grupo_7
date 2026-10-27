@@ -8,7 +8,7 @@ TP6 de Ingeniería y Calidad de Software (UTN FRC, Grupo 7): implementar la user
 
 - Web responsive. Backend en Python 3.11+, tests con pytest, estilo PEP8 con flake8 (79 columnas).
 - Persistencia en SQLite (D35). Capa web con Flask en `src/ecoharmony/web/` (`python run.py` la levanta en http://127.0.0.1:5000).
-- Mail de confirmación **simulado** con un modal "Mail enviado a …" (FAQ 5, D36).
+- Mail de confirmación con el QR: **envío real por SMTP** si el `.env` tiene la cuenta (ver `.env.ejemplo`); si no, se simula (D36, D49). Nunca commitear el `.env`.
 - Pago con tarjeta mediante una **pasarela de pago simulada** con el aspecto de Mercado Pago (no hay integración real).
 - Idioma: código de dominio, tests, commits y respuestas **en español**.
 
@@ -54,7 +54,7 @@ Para avanzar más rápido se trabaja **por grupos de casos** (decisión D20): un
 
 ## 4. Arquitectura
 
-Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Adaptadores en `src/ecoharmony/persistencia/` (`RepositorioSQLite`) y `src/ecoharmony/notificaciones/` (`NotificadorSimulado`). El caso de uso está en `src/ecoharmony/aplicacion/` (`ServicioDeCompra`: `comprar`, `pagar`, `cancelar`). Tests en `tests/unit/`, `tests/integration/` y `tests/system/`.
+Dominio puro en `src/ecoharmony/dominio/` (sin Flask, sin base de datos, sin internet). Adaptadores en `src/ecoharmony/persistencia/` (`RepositorioSQLite`) y `src/ecoharmony/notificaciones/` (`NotificadorSMTP`, `NotificadorSimulado` y `elegir_notificador`). El caso de uso está en `src/ecoharmony/aplicacion/` (`ServicioDeCompra`: `comprar`, `pagar`, `cancelar`). Tests en `tests/unit/`, `tests/integration/` y `tests/system/`.
 
 | Módulo | Contenido |
 | --- | --- |
@@ -88,7 +88,7 @@ Convenciones de diseño:
 
 ## 6. Estado y próximos pasos
 
-**Hecho** (267 tests en verde): todos los grupos, de `PRE` a `SIS`, con las respuestas del PO del 20/10/2026 aplicadas (S4 pop-up, S5 QR, S8 $0 por la pasarela). El frontend está en `web/templates/` y `web/static/`; las pruebas de sistema (`tests/system/`) usan Playwright 1.50 con el Edge instalado.
+**Hecho** (272 tests en verde): todos los grupos, de `PRE` a `SIS`, con las respuestas del PO del 20/10/2026 aplicadas (S4 pop-up, S5 QR, S8 $0 por la pasarela). El frontend está en `web/templates/` y `web/static/`; las pruebas de sistema (`tests/system/`) usan Playwright 1.50 con el Edge instalado.
 
 **Pendiente:** que el PO aclare el límite de 10 (por transacción o por fecha); se mantiene la FAQ 27.
 

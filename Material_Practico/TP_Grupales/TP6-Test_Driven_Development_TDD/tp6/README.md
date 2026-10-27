@@ -8,7 +8,7 @@ Implementación de la user story **"Comprar entradas"** aplicando Desarrollo Con
 
 ## 1. Qué se construye
 
-Una aplicación web responsive (backend en Python, persistencia en SQLite) donde un visitante compra entradas al parque indicando fecha, cantidad, edad de cada visitante, tipo de pase y forma de pago (efectivo, o tarjeta mediante una **pasarela de pago simulada** con el aspecto de Mercado Pago). Al confirmar, recibe un mail de confirmación (simulado con un aviso en pantalla, como permite la FAQ 5).
+Una aplicación web responsive (backend en Python, persistencia en SQLite) donde un visitante compra entradas al parque indicando fecha, cantidad, edad de cada visitante, tipo de pase y forma de pago (efectivo, o tarjeta mediante una **pasarela de pago simulada** con el aspecto de Mercado Pago). Al confirmar, recibe un mail de confirmación con el código QR de sus entradas (envío real por SMTP si se configura el `.env`; si no, se simula).
 
 Las reglas de negocio salen de tres fuentes, que deben tener a mano:
 
@@ -49,7 +49,10 @@ pytest -k PRE-05       # correr un caso por su ID
 pytest tests/system    # solo las pruebas en el navegador (usan el Edge instalado)
 flake8 src tests       # verificar PEP8 (no debe imprimir nada)
 python run.py          # levantar la app en http://127.0.0.1:5000
+pytest -m smtp_real    # enviar un mail real de prueba (requiere .env)
 ```
+
+**Envío real del mail (opcional):** copiar `.env.ejemplo` como `.env` y completar la cuenta de Gmail con una *contraseña de aplicación*. El `.env` no se sube a git. Sin `.env`, el mail se simula.
 
 ---
 
@@ -70,7 +73,7 @@ tp6/
 └── requirements.txt
 ```
 
-A medida que avance el trabajo se suman las carpetas de integración, sistema, adaptadores (SQLite, pasarela simulada, mail), la capa web y el frontend.
+A medida que avance el trabajo se suman las carpetas de integración, sistema, adaptadores (SQLite, pasarela simulada, mail por SMTP), la capa web y el frontend.
 
 ---
 
@@ -158,10 +161,10 @@ El PO respondió los supuestos S1 a S10 el 20/10/2026 (detalle en la sección 2 
 | `PAG`, `ORD`, `USR`, `MAI` | Estados, orden, sesión y mail | Hecho |
 | `TAR` | Validación de tarjeta | Hecho |
 | `BD` | Base de datos SQLite | Hecho |
-| `PSM`, `MAIL` | Pasarela de pago y mail simulados | Hecho |
+| `PSM`, `MAIL` | Pasarela de pago simulada y envío del mail (SMTP o simulado) | Hecho |
 | `SRV` | Servicio de compra | Hecho |
 | `API` | Capa web Flask | Hecho |
-| Frontend | Pantallas responsive: compra, pasarela, resultado y modal del mail | Hecho |
+| Frontend | Pantallas responsive: compra, pasarela y resultado con aviso del mail | Hecho |
 | `SIS` | Pruebas de sistema en el navegador (Edge con Playwright) | Hecho |
 
 Actualizar esta tabla al cerrar cada grupo.

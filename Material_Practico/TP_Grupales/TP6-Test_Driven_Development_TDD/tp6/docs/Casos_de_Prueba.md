@@ -13,7 +13,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | Nivel | Prefijos | Qué prueba | Dependencias |
 | --- | --- | --- | --- |
 | Unitaria | `PRE`, `EDA`, `PAS`, `DIA`, `FEC`, `CAN`, `PAG`, `ORD`, `USR`, `MAI`, `TAR` | Reglas de dominio puras | Ninguna (reloj inyectado) |
-| Integración | `BD`, `PSM`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí | Base SQLite temporal, pasarela simulada y mail simulado, Flask test client |
+| Integración | `BD`, `PSM`, `MAIL`, `SRV`, `API` | Componentes conectados entre sí | Base SQLite temporal, pasarela simulada, mail simulado o servidor SMTP falso, Flask test client |
 | Sistema | `SIS` | Flujo completo desde el navegador | Edge con Playwright, app con datos en memoria y reloj fijo |
 
 **Reloj de referencia para los tests:** "hoy" = **miércoles 14/10/2026, 10:00** (hora de Argentina), salvo que el caso indique otra cosa.
@@ -84,7 +84,7 @@ Los supuestos S1 a S10 se consultaron con el PO, que respondió el 20/10/2026.
 | S7 | Se puede comprar para hoy **antes de la apertura** (8:30), siempre que sea hasta las 17:30 | Confirmado por el PO |
 | S8 | Compra con tarjeta de **total $0**: pasa igual por la pasarela de pago | **Cambiado por el PO** (antes: quedaba `PAGADA` sin pasar por la pasarela) |
 | S9 | El mail se envía al **confirmar** la compra: en efectivo al crearla, con tarjeta al aprobarse el pago | Confirmado por el PO |
-| S10 | **Ya no aplica:** el mail se simula con un modal (FAQ 5), así que el envío no puede fallar | Confirmado por el PO |
+| S10 | El PO no pide contemplar fallas del mail. Como el mail ahora se envía de verdad, si falla la compra se mantiene y se muestra un aviso (SRV-15) | Confirmado por el PO (el aviso es decisión del grupo) |
 | S11 | La pasarela simulada se abre en **la misma pestaña** (redirección) y vuelve a la app al terminar | Decisión del grupo |
 | S12 | El resultado del pago se elige con el **nombre del titular**, como en las tarjetas de prueba de Mercado Pago: `APRO` aprueba, `OTHE`, `FUND`, `SECU` y `EXPI` rechazan, `CONT` queda pendiente. Cualquier otro titular con tarjeta válida **se aprueba** | Decisión del grupo |
 | S13 | En la pasarela **no se reintenta** tras un rechazo ni tras cancelar: la compra pasa a `FALLIDA` y se vuelve a la app (extiende S4) | Decisión del grupo |
@@ -346,15 +346,15 @@ Reemplaza a la integración real con Mercado Pago (la FAQ 4 autoriza simularla).
 | PSM-18 | Crear sesión con monto $0 | Se crea la sesión `ABIERTA` (se paga igual por la pasarela) | S8 |
 | PSM-19 | Después de pagar | La sesión no conserva número de tarjeta ni código de seguridad | S15 |
 
-### 4.3 Notificador de mail simulado (`MAIL`)
+### 4.3 Envío del mail (`MAIL`)
 
-La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a tu@email.com"). El notificador simulado no se conecta a ningún servidor: registra el mail y la app muestra el modal. Queda detrás de la interfaz `Notificador`, así que se podría sumar un envío real sin tocar el resto.
+El mail se envía de verdad por SMTP (`NotificadorSMTP`) cuando el `.env` tiene la cuenta; si no, el `NotificadorSimulado` lo registra sin enviarlo. Los tests automáticos usan el simulado o un servidor SMTP falso; solo MAIL-11 envía un mail real, y únicamente con `pytest -m smtp_real`.
 
 | ID | Caso | Resultado esperado | Origen |
 | --- | --- | --- | --- |
-| MAIL-01 | Notificador simulado | Registra el mail enviado y se puede inspeccionar | CA3, FAQ 5 |
+| MAIL-01 | Notificador simulado | Registra el mail enviado y se puede inspeccionar | CA3 |
 | MAIL-02 | Destinatario con formato inválido | Error sin registrar el envío | CA3 |
-| MAIL-03 | Resultado del envío | Informa la dirección a la que se envió (la usa el modal) | FAQ 5 |
+| MAIL-03 | Resultado del envío | Informa la dirección a la que se envió (la muestra la pantalla de éxito) | CA3 |
 | MAIL-04 | Envío real (SMTP): armado del mensaje | Remitente, destinatario y asunto correctos | CA3 |
 | MAIL-05 | Envío real: contenido | Versión de texto y versión HTML con el cuerpo del mail | CA3 |
 | MAIL-06 | Envío real: QR | La imagen del QR va dentro del HTML y también como adjunto (`qr-entradas.png`) | CA3, S5 |
@@ -380,7 +380,7 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 | SRV-09 | Con base SQLite real: dos compras de 5 y una de 1 | Las dos primeras pasan, la tercera se rechaza | FAQ 27 |
 | SRV-10 | Validación fallida | La base queda sin cambios | CA1 |
 | SRV-11 | Compra `FALLIDA` previa de 10 entradas | Se puede volver a comprar 10 | S4 |
-| SRV-12 | Compra confirmada (efectivo o pago aprobado) | El resultado incluye el email al que se envió el mail, para mostrar el modal | FAQ 5 |
+| SRV-12 | Compra confirmada (efectivo o pago aprobado) | El resultado incluye el email al que se envió el mail, para mostrarlo en pantalla | CA3 |
 | SRV-13 | Tarjeta con total $0 | Pasa por la pasarela: queda `PENDIENTE_PAGO_ONLINE` y, al aprobarse el pago, `PAGADA` con mail | S8 |
 | SRV-14 | Pago aprobado | El resultado incluye el mensaje final con cantidad y fecha | CA8 |
 | SRV-15 | Falla el envío real del mail | La compra se mantiene, no se informa destinatario y se devuelve un aviso | Diseño |
@@ -460,7 +460,7 @@ De menor a mayor complejidad, empezando por el dominio puro:
 5. `MAI`: armado del contenido del mail.
 6. `TAR`: validación de la tarjeta (unitarias).
 7. `BD`: persistencia real en SQLite.
-8. `PSM` y `MAIL`: pasarela simulada y notificador de mail simulado.
+8. `PSM` y `MAIL`: pasarela simulada y envío del mail (simulado y SMTP).
 9. `SRV`: orquestación de todo el flujo.
 10. `API`: capa Flask, incluidas las rutas de la pasarela.
 11. `SIS`: frontend responsive y pruebas end-to-end en el navegador.

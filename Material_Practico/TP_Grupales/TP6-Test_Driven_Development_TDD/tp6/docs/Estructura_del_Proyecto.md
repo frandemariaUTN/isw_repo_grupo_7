@@ -16,7 +16,7 @@ tp6/
 │   ├── dominio/         reglas de negocio
 │   ├── aplicacion/      el flujo completo de una compra
 │   ├── persistencia/    base de datos SQLite
-│   ├── notificaciones/  mail simulado
+│   ├── notificaciones/  envío del mail (SMTP o simulado)
 │   └── web/             Flask, pantallas, CSS y JS
 ├── tests/
 │   ├── unit/
@@ -30,7 +30,7 @@ tp6/
 - **`src/ecoharmony/dominio/`**: las reglas de negocio puras: precios y descuentos, días de apertura, límite de 10 entradas, validación de edad y de tarjeta, y la pasarela de pago simulada. No depende de Flask ni de la base de datos, así que se prueba rápido y sin servidor.
 - **`src/ecoharmony/aplicacion/`**: `ServicioDeCompra`, que une las piezas: valida la compra, la guarda, la manda a la pasarela si es con tarjeta y envía el mail.
 - **`src/ecoharmony/persistencia/`**: guarda las compras en una base **SQLite** (`data/ecoharmony.db`). Viene incluida en Python y no hay que instalar nada.
-- **`src/ecoharmony/notificaciones/`**: el mail de confirmación **simulado**: en vez de enviarlo, la app muestra un aviso "Mail enviado a …" (lo permite la FAQ 5).
+- **`src/ecoharmony/notificaciones/`**: envía el mail de confirmación con el QR por SMTP (Gmail). Los datos de la cuenta van en un `.env` que no se sube a git (ver `.env.ejemplo`); sin `.env`, el mail se simula.
 - **`src/ecoharmony/web/`**: la capa web con Flask.
   - `app.py` tiene las rutas.
   - `templates/` tiene las pantallas HTML.
