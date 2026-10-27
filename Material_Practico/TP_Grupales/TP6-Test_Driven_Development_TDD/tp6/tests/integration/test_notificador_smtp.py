@@ -1,4 +1,4 @@
-"""Pruebas del envio real de mails por SMTP (MAIL-04 a MAIL-11).
+"""Pruebas del envio real de mails por SMTP (MAIL-04 a MAIL-12).
 
 Salvo MAIL-11, usan un servidor SMTP falso: no se envia nada de verdad.
 """
@@ -9,6 +9,10 @@ import pytest
 
 from ecoharmony.dominio.errores import ErrorDeValidacion
 from ecoharmony.dominio.mails import Mail
+from ecoharmony.notificaciones import elegir_notificador
+from ecoharmony.notificaciones.notificador_simulado import (
+    NotificadorSimulado,
+)
 from ecoharmony.notificaciones.notificador_smtp import (
     ConfiguracionSMTP,
     NotificadorError,
@@ -171,3 +175,23 @@ def test_mail_11_envio_real_a_la_casilla_de_pruebas():
     )
     enviado = NotificadorSMTP(configuracion).enviar(mail(destino))
     assert enviado == destino
+
+
+@pytest.mark.parametrize(
+    "entorno, tipo",
+    [
+        pytest.param(
+            {
+                "SMTP_HOST": "smtp.gmail.com",
+                "SMTP_PUERTO": "587",
+                "SMTP_USUARIO": "cuenta@gmail.com",
+                "SMTP_CLAVE": "clave",
+            },
+            NotificadorSMTP,
+            id="MAIL-12-con-configuracion",
+        ),
+        pytest.param({}, NotificadorSimulado, id="MAIL-12-sin-configuracion"),
+    ],
+)
+def test_se_elige_el_envio_real_solo_si_hay_configuracion(entorno, tipo):
+    assert isinstance(elegir_notificador(entorno), tipo)

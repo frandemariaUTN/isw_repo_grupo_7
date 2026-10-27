@@ -58,7 +58,7 @@ Documento vivo: se actualiza a medida que avanzan los ciclos Red-Green-Refactor 
 | `integration/test_repositorio_sqlite.py` | BD-01 a BD-14 (los casos de contrato, BD-12, se corren contra memoria y SQLite) |
 | `integration/test_pasarela.py` | PSM-01 a PSM-19 |
 | `integration/test_notificador.py` | MAIL-01 a MAIL-03 |
-| `integration/test_notificador_smtp.py` | MAIL-04 a MAIL-11 |
+| `integration/test_notificador_smtp.py` | MAIL-04 a MAIL-12 |
 | `integration/test_servicio_de_compra.py` | SRV-01 a SRV-15 |
 | `integration/test_api.py` | API-01 a API-24 |
 | `system/test_sistema.py` | SIS-01 a SIS-08 |
@@ -297,7 +297,7 @@ Datos de prueba: Mastercard `5031 7557 3453 0604`, Visa `4509 9535 6623 3704`, c
 
 ---
 
-## 4. Pruebas de integración (83)
+## 4. Pruebas de integración (84)
 
 ### 4.1 Base de datos SQLite (`BD`)
 
@@ -363,6 +363,7 @@ La FAQ 5 permite simular el envío del mail mostrando un modal ("Mail enviado a 
 | MAIL-09 | Destinatario con formato inválido | Error sin conectarse al servidor | CA3 |
 | MAIL-10 | Configuración desde el `.env` | Completa: arma la configuración; incompleta: no hay configuración | Diseño |
 | MAIL-11 | `@pytest.mark.smtp_real`: envío real a la casilla de pruebas | Llega el mail (manual: `pytest -m smtp_real`) | CA3 |
+| MAIL-12 | Elegir el notificador al levantar la app | Con configuración SMTP envía mails reales; sin configuración usa el simulado | Diseño |
 
 ### 4.4 Servicio de compra (`SRV`)
 
@@ -473,6 +474,6 @@ Los casos demasiado triviales se agrupan en un solo commit, y los parametrizados
 | Nivel | Casos |
 | --- | --- |
 | Unitarias | 141 |
-| Integración | 83 |
+| Integración | 84 |
 | Sistema | 8 |
-| **Total** | **232** |
+| **Total** | **233** |
