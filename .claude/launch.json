@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "tp6",
+      "runtimeExecutable": "Material_Practico/TP_Grupales/TP6-Test_Driven_Development_TDD/tp6/.venv/bin/python",
+      "runtimeArgs": ["Material_Practico/TP_Grupales/TP6-Test_Driven_Development_TDD/tp6/run.py"],
+      "port": 5000
+    }
+  ]
+}
