@@ -145,6 +145,8 @@ Proponemos la siguiente estructura de nombrado de los commits según la/s activi
 | v4.0          | 25/08/26 | Tomás Santillán | Entrega de Práctico 4 SCM |
 | ------------- | -------- | --------------- | ------------------------- |
 | v7.0          | 07/10/26 | Tomás Santillán | Entrega de Práctico 7 SCRUM |
+| ------------- | -------- | --------------- | ------------------------- |
+| v6.0          | 02/11/26 | Tomás Santillán | Entrega de Práctico 6 TDD |
 
 
 Universidad Tecnológica Nacional - Facultad Regional Córdoba | Ingeniería y Calidad de Software - 2026
