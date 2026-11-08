@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block titulo %}{{ titulo }} | EcoHarmony Park{% endblock %}
+
+{% block contenido %}
+<main class="contenedor">
+  <section class="tarjeta exito {{ '' if exito else 'exito--problema' }}" data-exito="{{ 'si' if exito else 'no' }}">
+    {% with clase=("rana--festeja" if exito else "rana--triste") %}{% include "_rana.html" %}{% endwith %}
+    <h1>{{ titulo }}</h1>
+    <p class="exito__mensaje">{{ mensaje }}</p>
+    {% if en_boleteria %}<p class="nota">Recordá abonar en boletería antes de ingresar al parque.</p>{% endif %}
+    {% if mail %}<p class="aviso-mail">Te enviamos la confirmación con tu QR a {{ mail }}</p>{% endif %}
+    {% if aviso_mail %}<p class="aviso-mail aviso-mail--error">{{ aviso_mail }}</p>{% endif %}
+    {% if exito %}
+    <a class="boton boton--secundario" href="/">Volver al inicio</a>
+    {% else %}
+    <a class="boton" href="/">Intentar una nueva compra</a>
+    {% endif %}
+  </section>
+</main>
+{% if pop_up %}{% include "_modal_pago.html" %}{% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+  if (document.querySelector('[data-exito="si"]')) {
+    EcoHarmony.lanzarHojas();
+  }
+  EcoHarmony.abrirModal("modal-pago", 300);
+</script>
+{% endblock %}
